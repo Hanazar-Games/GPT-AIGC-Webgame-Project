@@ -15,11 +15,18 @@ const ui = {
   upgradeGrid: document.querySelector("#upgrade-grid"),
   startButton: document.querySelector("#start-button"),
   dashButton: document.querySelector("#dash-button"),
+  audioButton: document.querySelector("#audio-button"),
 };
 
 const bestScoreKey = "neon-salvage-best";
 const runHistoryKey = "neon-salvage-runs";
+const audioMuteKey = "neon-salvage-muted";
 const baseDashCooldown = 1.15;
+
+const audio = {
+  ctx: null,
+  muted: loadMuted(),
+};
 
 const upgrades = [
   {
@@ -178,6 +185,7 @@ function resetGame() {
   ui.module.textContent = "Collector I";
   ui.objective.textContent = "Fill charge";
   ui.startButton.textContent = "Launch";
+  updateAudioButton();
   updateDashButton();
   updateHud();
 }
@@ -213,6 +221,73 @@ function saveRunHistory(runs) {
   } catch {
     // Best-effort only; gameplay should never depend on storage.
   }
+}
+
+function loadMuted() {
+  try {
+    return localStorage.getItem(audioMuteKey) === "true";
+  } catch {
+    return false;
+  }
+}
+
+function saveMuted() {
+  try {
+    localStorage.setItem(audioMuteKey, `${audio.muted}`);
+  } catch {
+    // Audio preference is optional.
+  }
+}
+
+function ensureAudio() {
+  if (audio.muted) return null;
+  const AudioContext = window.AudioContext || window.webkitAudioContext;
+  if (!AudioContext) return null;
+  if (!audio.ctx) {
+    audio.ctx = new AudioContext();
+  }
+  if (audio.ctx.state === "suspended") {
+    audio.ctx.resume();
+  }
+  return audio.ctx;
+}
+
+function playTone(frequency, duration = 0.08, type = "sine", gain = 0.035) {
+  const ctx = ensureAudio();
+  if (!ctx) return;
+
+  const oscillator = ctx.createOscillator();
+  const volume = ctx.createGain();
+  const now = ctx.currentTime;
+  oscillator.type = type;
+  oscillator.frequency.setValueAtTime(frequency, now);
+  volume.gain.setValueAtTime(0.0001, now);
+  volume.gain.exponentialRampToValueAtTime(gain, now + 0.01);
+  volume.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+  oscillator.connect(volume).connect(ctx.destination);
+  oscillator.start(now);
+  oscillator.stop(now + duration + 0.02);
+}
+
+function playEventSound(eventName) {
+  const sounds = {
+    collect: [660, 0.055, "triangle", 0.03],
+    dash: [220, 0.09, "sawtooth", 0.024],
+    graze: [880, 0.05, "square", 0.018],
+    hit: [130, 0.14, "sawtooth", 0.04],
+    pulse: [520, 0.12, "triangle", 0.034],
+    upgrade: [740, 0.16, "sine", 0.04],
+    gameover: [92, 0.22, "sine", 0.045],
+  };
+  const sound = sounds[eventName];
+  if (sound) {
+    playTone(...sound);
+  }
+}
+
+function updateAudioButton() {
+  ui.audioButton.textContent = audio.muted ? "Muted" : "Audio";
+  ui.audioButton.setAttribute("aria-pressed", `${!audio.muted}`);
 }
 
 function createStars(count) {
@@ -333,6 +408,7 @@ function applyUpgrade(upgrade) {
   ui.upgradeGrid.innerHTML = "";
   ui.startButton.hidden = false;
   addBurst(player.x, player.y, "#39d8ff", 28);
+  playEventSound("upgrade");
 }
 
 function roman(value) {
@@ -430,6 +506,7 @@ function updateShards(dt) {
       state.score += shard.value * 9 * player.shardMultiplier;
       state.charge = clamp(state.charge + shard.value, 0, 100);
       addBurst(shard.x, shard.y, "#72f2a0", 8);
+      playEventSound("collect");
 
       if (state.charge >= 100) {
         state.charge = 0;
@@ -482,6 +559,7 @@ function updateHazards(dt) {
       state.score += 35 + state.wave * 8;
       ui.status.textContent = "Close salvage";
       addBurst(player.x, player.y, "#ffd166", 6);
+      playEventSound("graze");
     }
 
     if (player.invulnerableTimer <= 0 && hitDistance < collisionRadius) {
@@ -490,6 +568,7 @@ function updateHazards(dt) {
       player.invulnerableTimer = 0.8 + player.invulnerableBonus;
       state.shake = 8;
       addBurst(player.x, player.y, "#ff5f7e", 18);
+      playEventSound("hit");
       triggerShieldPulse();
 
       if (player.hull <= 0) {
@@ -515,6 +594,7 @@ function triggerShieldPulse() {
   if (cleared > 0) {
     state.score += cleared * (80 + state.wave * 12);
     ui.status.textContent = `Pulse cleared ${cleared}`;
+    playEventSound("pulse");
   }
 }
 
@@ -583,6 +663,7 @@ function endGame() {
     isRecord ? "New best saved." : `Best ${Math.floor(state.best).toLocaleString("en-US")}.`
   } ${medal}. ${trend} Survived ${formatTime(state.elapsed)}, collected ${state.shardsCollected} shards, grazed ${state.grazes} times. Press R to relaunch.`;
   ui.startButton.textContent = "Relaunch";
+  playEventSound("gameover");
   updateHud();
 }
 
@@ -628,6 +709,7 @@ function dash() {
   player.invulnerableTimer = Math.max(player.invulnerableTimer, 0.22);
   ui.status.textContent = "Dash burn";
   addBurst(player.x, player.y, "#ffd166", 12);
+  playEventSound("dash");
 }
 
 function draw() {
@@ -850,6 +932,7 @@ canvas.addEventListener("pointercancel", () => {
 });
 
 ui.startButton.addEventListener("click", () => {
+  ensureAudio();
   if (state.paused) {
     togglePause();
   } else {
@@ -860,6 +943,15 @@ ui.startButton.addEventListener("click", () => {
 ui.dashButton.addEventListener("pointerdown", (event) => {
   event.preventDefault();
   dash();
+});
+
+ui.audioButton.addEventListener("click", () => {
+  audio.muted = !audio.muted;
+  saveMuted();
+  updateAudioButton();
+  if (!audio.muted) {
+    playEventSound("upgrade");
+  }
 });
 
 window.addEventListener("resize", () => {
@@ -874,5 +966,6 @@ resizeBackingStore();
 state.stars = createStars(110);
 updateHud();
 updateDashButton();
+updateAudioButton();
 draw();
 requestAnimationFrame(frame);

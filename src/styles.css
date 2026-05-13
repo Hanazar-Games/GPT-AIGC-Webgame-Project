@@ -213,14 +213,29 @@ button:focus-visible {
   gap: 6px;
 }
 
+.audio-button,
 .dash-button {
   min-width: 68px;
   min-height: 30px;
   padding: 4px 10px;
-  border-color: rgba(255, 209, 102, 0.55);
-  background: rgba(255, 209, 102, 0.14);
   color: var(--ink);
   font-size: 0.78rem;
+}
+
+.audio-button {
+  border-color: rgba(114, 242, 160, 0.48);
+  background: rgba(114, 242, 160, 0.12);
+}
+
+.audio-button[aria-pressed="false"] {
+  border-color: rgba(170, 190, 210, 0.28);
+  background: rgba(244, 247, 251, 0.07);
+  color: var(--muted);
+}
+
+.dash-button {
+  border-color: rgba(255, 209, 102, 0.55);
+  background: rgba(255, 209, 102, 0.14);
 }
 
 .dash-button:disabled {
