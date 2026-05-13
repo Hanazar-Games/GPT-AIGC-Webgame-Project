@@ -23,6 +23,7 @@ Then visit `http://localhost:4173`.
 The game also supports pointer or touch movement on canvas.
 Skim close to debris for bonus score; dashing gives a tiny safety window.
 When charge reaches 100%, pick one of three upgrade branches.
+End-of-run results include survival time, shards collected, and near-miss grazes.
 
 ## Project Shape
 

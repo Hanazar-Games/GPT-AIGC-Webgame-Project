@@ -71,6 +71,8 @@ const state = {
   charge: 0,
   wave: 1,
   elapsed: 0,
+  shardsCollected: 0,
+  grazes: 0,
   spawnTimer: 0,
   shardTimer: 0,
   shake: 0,
@@ -133,6 +135,8 @@ function resetGame() {
   state.charge = 0;
   state.wave = 1;
   state.elapsed = 0;
+  state.shardsCollected = 0;
+  state.grazes = 0;
   state.spawnTimer = 0;
   state.shardTimer = 0;
   state.shake = 0;
@@ -392,6 +396,7 @@ function updateShards(dt) {
 
     if (distance(player, shard) < player.radius + shard.radius) {
       state.shards.splice(i, 1);
+      state.shardsCollected += 1;
       state.score += shard.value * 9;
       state.charge = clamp(state.charge + shard.value, 0, 100);
       addBurst(shard.x, shard.y, "#72f2a0", 8);
@@ -428,6 +433,7 @@ function updateHazards(dt) {
 
     if (!hazard.grazed && hitDistance < grazeRadius && hitDistance >= collisionRadius) {
       hazard.grazed = true;
+      state.grazes += 1;
       state.score += 35 + state.wave * 8;
       ui.status.textContent = "Close salvage";
       addBurst(player.x, player.y, "#ffd166", 6);
@@ -488,9 +494,15 @@ function endGame() {
   ui.overlay.hidden = false;
   ui.overlayCopy.textContent = `Final score ${finalScore.toLocaleString("en-US")}. ${
     isRecord ? "New best saved." : `Best ${Math.floor(state.best).toLocaleString("en-US")}.`
-  } Press R to relaunch.`;
+  } Survived ${formatTime(state.elapsed)}, collected ${state.shardsCollected} shards, grazed ${state.grazes} times. Press R to relaunch.`;
   ui.startButton.textContent = "Relaunch";
   updateHud();
+}
+
+function formatTime(seconds) {
+  const minutes = Math.floor(seconds / 60);
+  const remainder = Math.floor(seconds % 60).toString().padStart(2, "0");
+  return `${minutes}:${remainder}`;
 }
 
 function togglePause() {
