@@ -42,3 +42,7 @@ No package install is required for the current version.
 ## Deploy
 
 The repository includes a GitHub Pages workflow at `.github/workflows/pages.yml`. See `docs/OPERATIONS.md` for the runbook.
+
+## Direction
+
+The live roadmap is in `docs/ROADMAP.md`.
