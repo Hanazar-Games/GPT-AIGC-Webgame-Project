@@ -77,6 +77,7 @@ def main():
     assert_contains("src/game.js", "function getTrendLabel")
     assert_contains("src/game.js", "shardsCollected")
     assert_contains("src/game.js", "grazes")
+    assert_contains("src/game.js", "Final module")
     assert_contains("src/game.js", "runHistoryKey")
     assert_contains("src/game.js", "shardMultiplier")
     assert_contains("src/game.js", "pulseRadius")

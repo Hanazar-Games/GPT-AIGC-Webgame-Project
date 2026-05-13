@@ -710,6 +710,7 @@ function endGame() {
     seconds: Math.floor(state.elapsed),
     shards: state.shardsCollected,
     grazes: state.grazes,
+    module: ui.module.textContent,
     medal,
   };
 
@@ -728,7 +729,7 @@ function endGame() {
   ui.overlay.hidden = false;
   ui.overlayCopy.textContent = `Final score ${finalScore.toLocaleString("en-US")}. ${
     isRecord ? "New best saved." : `Best ${Math.floor(state.best).toLocaleString("en-US")}.`
-  } ${medal}. ${trend} Survived ${formatTime(state.elapsed)}, collected ${state.shardsCollected} shards, grazed ${state.grazes} times. Press R to relaunch.`;
+  } ${medal}. ${trend} Final module: ${ui.module.textContent}. Survived ${formatTime(state.elapsed)}, collected ${state.shardsCollected} shards, grazed ${state.grazes} times. Press R to relaunch.`;
   ui.startButton.textContent = "Relaunch";
   playEventSound("gameover");
   updateHud();
