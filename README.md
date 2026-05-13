@@ -16,11 +16,13 @@ Then visit `http://localhost:4173`.
 
 - Move: `WASD` / arrow keys
 - Dash: `Space`
+- Choose upgrade: `1` / `2` / `3`
 - Pause: `P`
 - Restart: `R`
 
 The game also supports pointer or touch movement on canvas.
 Skim close to debris for bonus score; dashing gives a tiny safety window.
+When charge reaches 100%, pick one of three upgrade branches.
 
 ## Project Shape
 

@@ -12,10 +12,47 @@ const ui = {
   objective: document.querySelector("#objective"),
   overlay: document.querySelector("#overlay"),
   overlayCopy: document.querySelector("#overlay-copy"),
+  upgradeGrid: document.querySelector("#upgrade-grid"),
   startButton: document.querySelector("#start-button"),
 };
 
 const storageKey = "neon-salvage-best";
+const baseDashCooldown = 1.15;
+
+const upgrades = [
+  {
+    id: "collector",
+    name: "Collector",
+    description: "Wider magnet field and faster shard pull.",
+    apply() {
+      player.collectorLevel += 1;
+      player.magnet += 22;
+      player.pullStrength += 32;
+      return `Collector ${roman(player.collectorLevel)}`;
+    },
+  },
+  {
+    id: "thrusters",
+    name: "Thrusters",
+    description: "Higher move speed and shorter dash cooldown.",
+    apply() {
+      player.speed += 34;
+      player.dashCooldownMax = Math.max(0.68, player.dashCooldownMax - 0.12);
+      return `Thrusters ${roman(player.thrusterLevel += 1)}`;
+    },
+  },
+  {
+    id: "shield",
+    name: "Shield",
+    description: "Repair hull and lengthen the safety window after hits.",
+    apply() {
+      player.shieldLevel += 1;
+      player.hull = clamp(player.hull + 24, 0, 100);
+      player.invulnerableBonus += 0.12;
+      return `Shield ${roman(player.shieldLevel)}`;
+    },
+  },
+];
 
 const keys = new Set();
 const pointer = {
@@ -28,6 +65,7 @@ const state = {
   running: false,
   paused: false,
   over: false,
+  choosingUpgrade: false,
   score: 0,
   best: loadBestScore(),
   charge: 0,
@@ -51,9 +89,14 @@ const player = {
   speed: 330,
   dashTimer: 0,
   dashCooldown: 0,
+  dashCooldownMax: baseDashCooldown,
   invulnerableTimer: 0,
+  invulnerableBonus: 0,
   magnet: 92,
+  pullStrength: 180,
   collectorLevel: 1,
+  thrusterLevel: 1,
+  shieldLevel: 1,
 };
 
 function clamp(value, min, max) {
@@ -85,6 +128,7 @@ function resetGame() {
   state.running = true;
   state.paused = false;
   state.over = false;
+  state.choosingUpgrade = false;
   state.score = 0;
   state.charge = 0;
   state.wave = 1;
@@ -104,11 +148,19 @@ function resetGame() {
   player.speed = 330;
   player.dashTimer = 0;
   player.dashCooldown = 0;
+  player.dashCooldownMax = baseDashCooldown;
   player.invulnerableTimer = 0;
+  player.invulnerableBonus = 0;
   player.magnet = 92;
+  player.pullStrength = 180;
   player.collectorLevel = 1;
+  player.thrusterLevel = 1;
+  player.shieldLevel = 1;
 
   ui.overlay.hidden = true;
+  ui.upgradeGrid.hidden = true;
+  ui.upgradeGrid.innerHTML = "";
+  ui.startButton.hidden = false;
   ui.status.textContent = "Harvesting";
   ui.module.textContent = "Collector I";
   ui.objective.textContent = "Fill charge";
@@ -214,13 +266,39 @@ function addBurst(x, y, color, count = 10) {
   }
 }
 
-function upgradeCollector() {
-  player.collectorLevel += 1;
-  player.magnet += 18;
-  player.speed += 10;
-  ui.module.textContent = `Collector ${roman(player.collectorLevel)}`;
+function openUpgradeChoice() {
+  state.choosingUpgrade = true;
+  ui.overlay.hidden = false;
+  ui.upgradeGrid.hidden = false;
+  ui.upgradeGrid.innerHTML = "";
+  ui.overlayCopy.textContent = "Choose one overclock module.";
+  ui.startButton.hidden = true;
+  ui.status.textContent = "Upgrade ready";
+  ui.objective.textContent = "Pick module";
+
+  upgrades.forEach((upgrade, index) => {
+    const button = document.createElement("button");
+    button.className = "upgrade-choice";
+    button.type = "button";
+    button.dataset.upgrade = upgrade.id;
+    button.innerHTML = `<span>${index + 1}</span><strong>${upgrade.name}</strong><small>${upgrade.description}</small>`;
+    button.addEventListener("click", () => applyUpgrade(upgrade));
+    ui.upgradeGrid.append(button);
+  });
+}
+
+function applyUpgrade(upgrade) {
+  const label = upgrade.apply();
+  state.choosingUpgrade = false;
+  state.lastTime = performance.now();
+  ui.module.textContent = label;
   ui.status.textContent = "Module upgraded";
-  ui.objective.textContent = player.collectorLevel % 2 === 0 ? "Stay alive" : "Fill charge";
+  ui.objective.textContent = "Collect shards";
+  ui.overlay.hidden = true;
+  ui.upgradeGrid.hidden = true;
+  ui.upgradeGrid.innerHTML = "";
+  ui.startButton.hidden = false;
+  addBurst(player.x, player.y, "#39d8ff", 28);
 }
 
 function roman(value) {
@@ -229,7 +307,7 @@ function roman(value) {
 }
 
 function update(dt) {
-  if (!state.running || state.paused || state.over) {
+  if (!state.running || state.paused || state.over || state.choosingUpgrade) {
     return;
   }
 
@@ -308,8 +386,8 @@ function updateShards(dt) {
     const len = Math.hypot(dx, dy);
 
     if (len < pullDistance && len > 1) {
-      shard.x += (dx / len) * dt * 180;
-      shard.y += (dy / len) * dt * 180;
+      shard.x += (dx / len) * dt * player.pullStrength;
+      shard.y += (dy / len) * dt * player.pullStrength;
     }
 
     if (distance(player, shard) < player.radius + shard.radius) {
@@ -320,8 +398,7 @@ function updateShards(dt) {
 
       if (state.charge >= 100) {
         state.charge = 0;
-        upgradeCollector();
-        addBurst(player.x, player.y, "#39d8ff", 24);
+        openUpgradeChoice();
       }
     }
   }
@@ -359,7 +436,7 @@ function updateHazards(dt) {
     if (player.invulnerableTimer <= 0 && hitDistance < collisionRadius) {
       state.hazards.splice(i, 1);
       player.hull = clamp(player.hull - hazard.damage, 0, 100);
-      player.invulnerableTimer = 0.8;
+      player.invulnerableTimer = 0.8 + player.invulnerableBonus;
       state.shake = 8;
       addBurst(player.x, player.y, "#ff5f7e", 18);
 
@@ -417,7 +494,7 @@ function endGame() {
 }
 
 function togglePause() {
-  if (!state.running || state.over) return;
+  if (!state.running || state.over || state.choosingUpgrade) return;
   state.paused = !state.paused;
   ui.status.textContent = state.paused ? "Paused" : "Harvesting";
   ui.objective.textContent = state.paused ? "Resume run" : "Collect shards";
@@ -430,9 +507,9 @@ function togglePause() {
 }
 
 function dash() {
-  if (!state.running || state.paused || player.dashCooldown > 0) return;
+  if (!state.running || state.paused || state.choosingUpgrade || player.dashCooldown > 0) return;
   player.dashTimer = 0.18;
-  player.dashCooldown = 1.15;
+  player.dashCooldown = player.dashCooldownMax;
   player.invulnerableTimer = Math.max(player.invulnerableTimer, 0.22);
   ui.status.textContent = "Dash burn";
   addBurst(player.x, player.y, "#ffd166", 12);
@@ -568,7 +645,7 @@ function drawPlayer() {
   ctx.stroke();
 
   if (player.dashCooldown > 0) {
-    const cooldown = 1 - player.dashCooldown / 1.15;
+    const cooldown = 1 - player.dashCooldown / player.dashCooldownMax;
     ctx.strokeStyle = "rgba(255, 209, 102, 0.78)";
     ctx.lineWidth = 4;
     ctx.beginPath();
@@ -606,6 +683,8 @@ window.addEventListener("keydown", (event) => {
   if (key === " ") {
     event.preventDefault();
     dash();
+  } else if (state.choosingUpgrade && ["1", "2", "3"].includes(key)) {
+    applyUpgrade(upgrades[Number.parseInt(key, 10) - 1]);
   } else if (key === "p") {
     togglePause();
   } else if (key === "r") {

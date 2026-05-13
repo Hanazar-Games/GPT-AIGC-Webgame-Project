@@ -10,7 +10,7 @@ This project is operated as a living solo webgame. Each cycle should leave the g
 
 ## Next Gameplay
 
-- Add two more upgrade branches: shield pulse and shard multiplier.
+- Add shield pulse and shard multiplier as deeper branch upgrades.
 - Add elite debris patterns after wave 4.
 - Add a short end-of-run breakdown with shards collected, grazes, and survival time.
 - Improve mobile ergonomics with a visible touch target for dash.
