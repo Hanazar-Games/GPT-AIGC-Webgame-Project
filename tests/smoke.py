@@ -35,6 +35,8 @@ def main():
     assert_contains("src/game.js", "function spawnHazard()")
     assert_contains("src/game.js", "localStorage")
     assert_contains("src/game.js", "function saveBestScore")
+    assert_contains("src/game.js", "invulnerableTimer")
+    assert_contains("src/game.js", "grazed")
     assert_contains("src/game.js", "requestAnimationFrame(frame)")
     assert_contains("src/styles.css", "@media (max-width: 760px)")
     assert_contains("README.md", "python3 tests/smoke.py")

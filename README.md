@@ -20,6 +20,7 @@ Then visit `http://localhost:4173`.
 - Restart: `R`
 
 The game also supports pointer or touch movement on canvas.
+Skim close to debris for bonus score; dashing gives a tiny safety window.
 
 ## Project Shape
 
@@ -28,7 +29,7 @@ The game also supports pointer or touch movement on canvas.
 - `src/game.js` - engine, entities, difficulty, input, and rendering
 - `tests/smoke.py` - repository smoke checks for required files and browser-facing markup
 
-The game stores the best score in browser `localStorage`.
+The game stores the best score in browser `localStorage`. It also rewards near misses and uses short invulnerability windows to keep collisions readable.
 
 ## Verify
 

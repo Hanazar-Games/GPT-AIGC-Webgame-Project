@@ -51,6 +51,7 @@ const player = {
   speed: 330,
   dashTimer: 0,
   dashCooldown: 0,
+  invulnerableTimer: 0,
   magnet: 92,
   collectorLevel: 1,
 };
@@ -103,6 +104,7 @@ function resetGame() {
   player.speed = 330;
   player.dashTimer = 0;
   player.dashCooldown = 0;
+  player.invulnerableTimer = 0;
   player.magnet = 92;
   player.collectorLevel = 1;
 
@@ -191,6 +193,7 @@ function spawnHazard() {
     rotation: random(0, Math.PI * 2),
     spin: random(-2.2, 2.2),
     damage: 12 + state.wave * 1.5,
+    grazed: false,
   });
 }
 
@@ -238,6 +241,7 @@ function update(dt) {
   state.shake = Math.max(0, state.shake - dt * 18);
   player.dashTimer = Math.max(0, player.dashTimer - dt);
   player.dashCooldown = Math.max(0, player.dashCooldown - dt);
+  player.invulnerableTimer = Math.max(0, player.invulnerableTimer - dt);
 
   if (state.spawnTimer <= 0) {
     spawnHazard();
@@ -341,9 +345,21 @@ function updateHazards(dt) {
       continue;
     }
 
-    if (distance(player, hazard) < player.radius + hazard.radius) {
+    const hitDistance = distance(player, hazard);
+    const collisionRadius = player.radius * 0.72 + hazard.radius;
+    const grazeRadius = player.radius + hazard.radius + 28;
+
+    if (!hazard.grazed && hitDistance < grazeRadius && hitDistance >= collisionRadius) {
+      hazard.grazed = true;
+      state.score += 35 + state.wave * 8;
+      ui.status.textContent = "Close salvage";
+      addBurst(player.x, player.y, "#ffd166", 6);
+    }
+
+    if (player.invulnerableTimer <= 0 && hitDistance < collisionRadius) {
       state.hazards.splice(i, 1);
       player.hull = clamp(player.hull - hazard.damage, 0, 100);
+      player.invulnerableTimer = 0.8;
       state.shake = 8;
       addBurst(player.x, player.y, "#ff5f7e", 18);
 
@@ -417,6 +433,7 @@ function dash() {
   if (!state.running || state.paused || player.dashCooldown > 0) return;
   player.dashTimer = 0.18;
   player.dashCooldown = 1.15;
+  player.invulnerableTimer = Math.max(player.invulnerableTimer, 0.22);
   ui.status.textContent = "Dash burn";
   addBurst(player.x, player.y, "#ffd166", 12);
 }
@@ -526,6 +543,9 @@ function drawBursts() {
 function drawPlayer() {
   ctx.save();
   ctx.translate(player.x, player.y);
+  if (player.invulnerableTimer > 0 && Math.floor(player.invulnerableTimer * 18) % 2 === 0) {
+    ctx.globalAlpha = 0.58;
+  }
 
   const glow = ctx.createRadialGradient(0, 0, 0, 0, 0, player.magnet);
   glow.addColorStop(0, "rgba(57, 216, 255, 0.18)");
@@ -546,6 +566,15 @@ function drawPlayer() {
   ctx.closePath();
   ctx.fill();
   ctx.stroke();
+
+  if (player.dashCooldown > 0) {
+    const cooldown = 1 - player.dashCooldown / 1.15;
+    ctx.strokeStyle = "rgba(255, 209, 102, 0.78)";
+    ctx.lineWidth = 4;
+    ctx.beginPath();
+    ctx.arc(0, 0, 31, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * cooldown);
+    ctx.stroke();
+  }
 
   ctx.fillStyle = "#07131a";
   ctx.beginPath();
