@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Neon Salvage, a zero-build browser survival game about collecting energy in a dangerous debris field."
+    />
+    <title>Neon Salvage</title>
+    <link rel="stylesheet" href="src/styles.css" />
+  </head>
+  <body>
+    <main class="game-shell" aria-label="Neon Salvage game">
+      <section class="hud" aria-label="Pilot telemetry">
+        <div>
+          <p class="label">Score</p>
+          <strong id="score">0</strong>
+        </div>
+        <div>
+          <p class="label">Charge</p>
+          <strong id="charge">0%</strong>
+        </div>
+        <div>
+          <p class="label">Hull</p>
+          <strong id="hull">100%</strong>
+        </div>
+        <div>
+          <p class="label">Wave</p>
+          <strong id="wave">1</strong>
+        </div>
+      </section>
+
+      <section class="stage" aria-label="Play field">
+        <canvas id="game" width="1280" height="720" aria-label="Neon Salvage canvas"></canvas>
+        <div class="overlay" id="overlay">
+          <h1>Neon Salvage</h1>
+          <p id="overlay-copy">Collect shards, dodge debris, and overclock your salvage drone.</p>
+          <button id="start-button" type="button">Launch</button>
+        </div>
+      </section>
+
+      <section class="console" aria-label="Ship console">
+        <div>
+          <p class="label">Module</p>
+          <strong id="module">Collector I</strong>
+        </div>
+        <div>
+          <p class="label">Status</p>
+          <strong id="status">Ready</strong>
+        </div>
+        <div class="controls" aria-label="Controls">
+          <kbd>WASD</kbd>
+          <kbd>Space</kbd>
+          <kbd>P</kbd>
+          <kbd>R</kbd>
+        </div>
+      </section>
+    </main>
+
+    <script type="module" src="src/game.js"></script>
+  </body>
+</html>

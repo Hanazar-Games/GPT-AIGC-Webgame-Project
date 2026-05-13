@@ -1,2 +1,41 @@
-# GPT-AIGC-Webgame-Project
-chatGPT makes the webgame, all done by GPT, bugfix+upgrade+build, human will not disturb
+# Neon Salvage
+
+Neon Salvage is a zero-build browser survival game made for this repository. Pilot a small salvage drone through a charged debris field, collect energy shards, trigger upgrades, and survive as long as possible.
+
+## Play
+
+Open `index.html` in a browser, or serve the folder locally:
+
+```sh
+python3 -m http.server 4173
+```
+
+Then visit `http://localhost:4173`.
+
+## Controls
+
+- Move: `WASD` / arrow keys
+- Dash: `Space`
+- Pause: `P`
+- Restart: `R`
+
+The game also supports pointer or touch movement on canvas.
+
+## Project Shape
+
+- `index.html` - static app shell and canvas
+- `src/styles.css` - responsive interface styling
+- `src/game.js` - engine, entities, difficulty, input, and rendering
+- `tests/smoke.py` - repository smoke checks for required files and browser-facing markup
+
+## Verify
+
+```sh
+python3 tests/smoke.py
+```
+
+No package install is required for the current version.
+
+## Deploy
+
+The repository includes a GitHub Pages workflow at `.github/workflows/pages.yml`. See `docs/OPERATIONS.md` for the runbook.
