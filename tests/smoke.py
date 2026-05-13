@@ -53,6 +53,7 @@ def main():
         "src/styles.css",
         "src/game.js",
         "src/achievements.js",
+        "src/audio.js",
         "README.md",
         "LICENSE",
     ]
@@ -78,8 +79,9 @@ def main():
     assert_contains("src/game.js", "upgrade-choice--")
     assert_contains("src/game.js", "tag")
     assert_contains("src/game.js", "function updateDashButton")
-    assert_contains("src/game.js", "function playEventSound")
-    assert_contains("src/game.js", "function startMusicLayer")
+    assert_contains("src/game.js", 'from "./audio.js"')
+    assert_contains("src/audio.js", "function playEventSound")
+    assert_contains("src/audio.js", "function startMusicLayer")
     assert_contains("src/game.js", "function updateMusicLayer")
     assert_contains("src/game.js", "function updateAudioButton")
     assert_contains("src/game.js", "function triggerShieldPulse")
@@ -101,8 +103,8 @@ def main():
     assert_contains("src/game.js", "seeker")
     assert_contains("src/game.js", "elite")
     assert_contains("src/game.js", "localStorage")
-    assert_contains("src/game.js", "AudioContext")
-    assert_contains("src/game.js", "setTargetAtTime")
+    assert_contains("src/audio.js", "AudioContext")
+    assert_contains("src/audio.js", "setTargetAtTime")
     assert_contains("src/game.js", "function saveBestScore")
     assert_contains("src/game.js", "invulnerableTimer")
     assert_contains("src/game.js", "grazed")
