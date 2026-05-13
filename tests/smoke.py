@@ -1,3 +1,4 @@
+from html.parser import HTMLParser
 from pathlib import Path
 
 
@@ -14,6 +15,29 @@ def assert_contains(path, needle):
         raise AssertionError(f"{path} does not contain {needle!r}")
 
 
+class AssetParser(HTMLParser):
+    def __init__(self):
+        super().__init__()
+        self.assets = []
+
+    def handle_starttag(self, tag, attrs):
+        attrs = dict(attrs)
+        if tag == "script" and attrs.get("src"):
+            self.assets.append(attrs["src"])
+        if tag == "link" and attrs.get("href"):
+            self.assets.append(attrs["href"])
+
+
+def assert_referenced_assets_exist():
+    parser = AssetParser()
+    parser.feed(read("index.html"))
+    for asset in parser.assets:
+        if asset.startswith(("http://", "https://", "//")):
+            continue
+        if not (ROOT / asset).exists():
+            raise AssertionError(f"Referenced asset does not exist: {asset}")
+
+
 def main():
     required = [
         "index.html",
@@ -26,6 +50,8 @@ def main():
     for item in required:
         if not (ROOT / item).exists():
             raise AssertionError(f"Missing required file: {item}")
+
+    assert_referenced_assets_exist()
 
     assert_contains("index.html", '<canvas id="game"')
     assert_contains("index.html", 'id="best"')
