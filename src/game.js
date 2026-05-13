@@ -33,6 +33,8 @@ const upgrades = [
   {
     id: "collector",
     name: "Collector",
+    tag: "Harvest",
+    tone: "green",
     description: "Wider magnet field, faster shard pull, and better shard value.",
     apply() {
       player.collectorLevel += 1;
@@ -45,6 +47,8 @@ const upgrades = [
   {
     id: "thrusters",
     name: "Thrusters",
+    tag: "Velocity",
+    tone: "amber",
     description: "Higher move speed and shorter dash cooldown.",
     apply() {
       player.speed += 34;
@@ -55,6 +59,8 @@ const upgrades = [
   {
     id: "shield",
     name: "Shield",
+    tag: "Defense",
+    tone: "cyan",
     description: "Repair hull, lengthen hit safety, and pulse nearby debris.",
     apply() {
       player.shieldLevel += 1;
@@ -445,10 +451,10 @@ function openUpgradeChoice() {
 
   upgrades.forEach((upgrade, index) => {
     const button = document.createElement("button");
-    button.className = "upgrade-choice";
+    button.className = `upgrade-choice upgrade-choice--${upgrade.tone}`;
     button.type = "button";
     button.dataset.upgrade = upgrade.id;
-    button.innerHTML = `<span>${index + 1}</span><strong>${upgrade.name}</strong><small>${upgrade.description}</small>`;
+    button.innerHTML = `<span>${index + 1} / ${upgrade.tag}</span><strong>${upgrade.name}</strong><small>${upgrade.description}</small>`;
     button.addEventListener("click", () => applyUpgrade(upgrade));
     ui.upgradeGrid.append(button);
   });

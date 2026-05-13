@@ -64,6 +64,8 @@ def main():
     assert_contains("src/game.js", "function spawnHazard()")
     assert_contains("src/game.js", "function openUpgradeChoice")
     assert_contains("src/game.js", "function applyUpgrade")
+    assert_contains("src/game.js", "upgrade-choice--")
+    assert_contains("src/game.js", "tag")
     assert_contains("src/game.js", "function updateDashButton")
     assert_contains("src/game.js", "function playEventSound")
     assert_contains("src/game.js", "function startMusicLayer")
@@ -89,6 +91,7 @@ def main():
     assert_contains("src/game.js", "grazed")
     assert_contains("src/game.js", "requestAnimationFrame(frame)")
     assert_contains("src/styles.css", "@media (max-width: 760px)")
+    assert_contains("src/styles.css", ".upgrade-choice--green")
     assert_contains("README.md", "python3 tests/smoke.py")
     assert_contains("docs/OPERATIONS.md", "browsers block audio before user interaction")
 

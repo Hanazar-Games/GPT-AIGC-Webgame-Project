@@ -10,7 +10,7 @@ This project is operated as a living solo webgame. Each cycle should leave the g
 
 ## Next Gameplay
 
-- Add upgrade-specific visual effects and late-branch variants.
+- Add late-branch upgrade variants and selection history.
 - Add richer music motifs for upgrade branches.
 - Add more elite debris patterns after wave 6.
 - Add richer end-of-run medals with unlockable achievement records.

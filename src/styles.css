@@ -160,11 +160,42 @@ h1 {
   background: rgba(8, 22, 30, 0.88);
   color: var(--ink);
   text-align: left;
+  box-shadow: inset 0 0 0 1px transparent;
 }
 
 .upgrade-choice:hover,
 .upgrade-choice:focus-visible {
   border-color: var(--amber);
+}
+
+.upgrade-choice--green {
+  border-color: rgba(114, 242, 160, 0.42);
+  box-shadow: inset 0 0 0 1px rgba(114, 242, 160, 0.1);
+}
+
+.upgrade-choice--amber {
+  border-color: rgba(255, 209, 102, 0.46);
+  box-shadow: inset 0 0 0 1px rgba(255, 209, 102, 0.12);
+}
+
+.upgrade-choice--cyan {
+  border-color: rgba(57, 216, 255, 0.46);
+  box-shadow: inset 0 0 0 1px rgba(57, 216, 255, 0.12);
+}
+
+.upgrade-choice--green:hover,
+.upgrade-choice--green:focus-visible {
+  border-color: var(--green);
+}
+
+.upgrade-choice--amber:hover,
+.upgrade-choice--amber:focus-visible {
+  border-color: var(--amber);
+}
+
+.upgrade-choice--cyan:hover,
+.upgrade-choice--cyan:focus-visible {
+  border-color: var(--cyan);
 }
 
 .upgrade-choice span {

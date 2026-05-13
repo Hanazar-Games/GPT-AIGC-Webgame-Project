@@ -27,6 +27,7 @@ The background music layer reacts to wave pressure and active debris count.
 Skim close to debris for bonus score; dashing gives a tiny safety window.
 When charge reaches 100%, pick one of three upgrade branches.
 Collector raises shard value; Shield adds a defensive pulse after hits.
+Upgrade cards use branch colors and tags for quick scanning.
 End-of-run results include survival time, shards collected, and near-miss grazes.
 The last five runs are tracked locally for trend feedback.
 Wave 4 and beyond can spawn elite seeker debris.
