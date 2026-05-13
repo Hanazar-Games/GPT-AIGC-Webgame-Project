@@ -26,6 +26,7 @@ const baseDashCooldown = 1.15;
 const audio = {
   ctx: null,
   muted: loadMuted(),
+  music: null,
 };
 
 const upgrades = [
@@ -285,6 +286,62 @@ function playEventSound(eventName) {
   }
 }
 
+function startMusicLayer() {
+  const ctx = ensureAudio();
+  if (!ctx || audio.music) return;
+
+  const bass = ctx.createOscillator();
+  const pulse = ctx.createOscillator();
+  const bassGain = ctx.createGain();
+  const pulseGain = ctx.createGain();
+  const master = ctx.createGain();
+  bass.type = "sine";
+  pulse.type = "triangle";
+  bass.frequency.value = 55;
+  pulse.frequency.value = 110;
+  bassGain.gain.value = 0.012;
+  pulseGain.gain.value = 0.002;
+  master.gain.value = 0.16;
+  bass.connect(bassGain).connect(master).connect(ctx.destination);
+  pulse.connect(pulseGain).connect(master);
+  bass.start();
+  pulse.start();
+  audio.music = { bass, pulse, bassGain, pulseGain, master };
+}
+
+function stopMusicLayer() {
+  if (!audio.music) return;
+  const music = audio.music;
+  audio.music = null;
+  const ctx = audio.ctx;
+  const now = ctx ? ctx.currentTime : 0;
+  try {
+    music.master.gain.cancelScheduledValues(now);
+    music.master.gain.setTargetAtTime(0.0001, now, 0.08);
+    music.bass.stop(now + 0.18);
+    music.pulse.stop(now + 0.18);
+  } catch {
+    // Oscillators can only be stopped once.
+  }
+}
+
+function updateMusicLayer() {
+  if (!state.running || state.paused || state.over || state.choosingUpgrade || audio.muted) {
+    stopMusicLayer();
+    return;
+  }
+
+  startMusicLayer();
+  if (!audio.music || !audio.ctx) return;
+
+  const now = audio.ctx.currentTime;
+  const pressure = clamp((state.wave - 1) / 8 + state.hazards.length / 18, 0, 1);
+  audio.music.bass.frequency.setTargetAtTime(48 + pressure * 34, now, 0.18);
+  audio.music.pulse.frequency.setTargetAtTime(96 + pressure * 92, now, 0.12);
+  audio.music.bassGain.gain.setTargetAtTime(0.01 + pressure * 0.018, now, 0.2);
+  audio.music.pulseGain.gain.setTargetAtTime(0.002 + pressure * 0.012, now, 0.16);
+}
+
 function updateAudioButton() {
   ui.audioButton.textContent = audio.muted ? "Muted" : "Audio";
   ui.audioButton.setAttribute("aria-pressed", `${!audio.muted}`);
@@ -377,6 +434,7 @@ function addBurst(x, y, color, count = 10) {
 
 function openUpgradeChoice() {
   state.choosingUpgrade = true;
+  stopMusicLayer();
   ui.overlay.hidden = false;
   ui.upgradeGrid.hidden = false;
   ui.upgradeGrid.innerHTML = "";
@@ -418,6 +476,7 @@ function roman(value) {
 
 function update(dt) {
   if (!state.running || state.paused || state.over || state.choosingUpgrade) {
+    updateMusicLayer();
     return;
   }
 
@@ -447,6 +506,7 @@ function update(dt) {
   updateHazards(dt);
   updateBursts(dt);
   updateHud();
+  updateMusicLayer();
 }
 
 function movePlayer(dt) {
@@ -656,6 +716,7 @@ function endGame() {
 
   state.over = true;
   state.running = false;
+  stopMusicLayer();
   ui.status.textContent = isRecord ? "New record" : medal;
   ui.objective.textContent = "Relaunch ready";
   ui.overlay.hidden = false;
@@ -692,6 +753,7 @@ function formatTime(seconds) {
 function togglePause() {
   if (!state.running || state.over || state.choosingUpgrade) return;
   state.paused = !state.paused;
+  updateMusicLayer();
   ui.status.textContent = state.paused ? "Paused" : "Harvesting";
   ui.objective.textContent = state.paused ? "Resume run" : "Collect shards";
   ui.overlay.hidden = !state.paused;
@@ -947,10 +1009,14 @@ ui.dashButton.addEventListener("pointerdown", (event) => {
 
 ui.audioButton.addEventListener("click", () => {
   audio.muted = !audio.muted;
+  if (audio.muted) {
+    stopMusicLayer();
+  }
   saveMuted();
   updateAudioButton();
   if (!audio.muted) {
     playEventSound("upgrade");
+    updateMusicLayer();
   }
 });
 

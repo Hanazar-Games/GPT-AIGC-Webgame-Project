@@ -23,6 +23,7 @@ Then visit `http://localhost:4173`.
 The game also supports pointer or touch movement on canvas.
 Touch devices get an on-screen dash button.
 Audio is synthesized in-browser and can be muted from the controls.
+The background music layer reacts to wave pressure and active debris count.
 Skim close to debris for bonus score; dashing gives a tiny safety window.
 When charge reaches 100%, pick one of three upgrade branches.
 Collector raises shard value; Shield adds a defensive pulse after hits.

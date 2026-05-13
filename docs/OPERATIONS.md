@@ -29,6 +29,7 @@ Open `http://localhost:4173`.
 - `P` pauses and resumes.
 - `R` restarts after a loss.
 - Audio toggle switches between Audio and Muted after a user gesture.
+- Background audio should fade out during pause, upgrade choice, and game over.
 
 ## Incident Notes
 
