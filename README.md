@@ -25,6 +25,7 @@ Touch devices get an on-screen dash button.
 Skim close to debris for bonus score; dashing gives a tiny safety window.
 When charge reaches 100%, pick one of three upgrade branches.
 End-of-run results include survival time, shards collected, and near-miss grazes.
+The last five runs are tracked locally for trend feedback.
 Wave 4 and beyond can spawn elite seeker debris.
 
 ## Project Shape

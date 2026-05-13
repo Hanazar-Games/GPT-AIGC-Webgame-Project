@@ -17,7 +17,8 @@ const ui = {
   dashButton: document.querySelector("#dash-button"),
 };
 
-const storageKey = "neon-salvage-best";
+const bestScoreKey = "neon-salvage-best";
+const runHistoryKey = "neon-salvage-runs";
 const baseDashCooldown = 1.15;
 
 const upgrades = [
@@ -69,6 +70,7 @@ const state = {
   choosingUpgrade: false,
   score: 0,
   best: loadBestScore(),
+  recentRuns: loadRunHistory(),
   charge: 0,
   wave: 1,
   elapsed: 0,
@@ -176,7 +178,7 @@ function resetGame() {
 
 function loadBestScore() {
   try {
-    return Number.parseInt(localStorage.getItem(storageKey) || "0", 10) || 0;
+    return Number.parseInt(localStorage.getItem(bestScoreKey) || "0", 10) || 0;
   } catch {
     return 0;
   }
@@ -184,9 +186,26 @@ function loadBestScore() {
 
 function saveBestScore(value) {
   try {
-    localStorage.setItem(storageKey, `${Math.floor(value)}`);
+    localStorage.setItem(bestScoreKey, `${Math.floor(value)}`);
   } catch {
     // Some private browsing modes reject localStorage writes.
+  }
+}
+
+function loadRunHistory() {
+  try {
+    const runs = JSON.parse(localStorage.getItem(runHistoryKey) || "[]");
+    return Array.isArray(runs) ? runs.filter((run) => Number.isFinite(run.score)).slice(0, 5) : [];
+  } catch {
+    return [];
+  }
+}
+
+function saveRunHistory(runs) {
+  try {
+    localStorage.setItem(runHistoryKey, JSON.stringify(runs.slice(0, 5)));
+  } catch {
+    // Best-effort only; gameplay should never depend on storage.
   }
 }
 
@@ -511,21 +530,50 @@ function updateDashButton() {
 function endGame() {
   const finalScore = Math.floor(state.score);
   const isRecord = finalScore > state.best;
+  const medal = getRunMedal(finalScore, state.elapsed, state.grazes);
+  const trend = getTrendLabel(finalScore, state.recentRuns);
+  const runSummary = {
+    score: finalScore,
+    wave: state.wave,
+    seconds: Math.floor(state.elapsed),
+    shards: state.shardsCollected,
+    grazes: state.grazes,
+    medal,
+  };
+
   if (isRecord) {
     state.best = finalScore;
     saveBestScore(state.best);
   }
+  state.recentRuns = [runSummary, ...state.recentRuns].slice(0, 5);
+  saveRunHistory(state.recentRuns);
 
   state.over = true;
   state.running = false;
-  ui.status.textContent = isRecord ? "New record" : "Drone lost";
+  ui.status.textContent = isRecord ? "New record" : medal;
   ui.objective.textContent = "Relaunch ready";
   ui.overlay.hidden = false;
   ui.overlayCopy.textContent = `Final score ${finalScore.toLocaleString("en-US")}. ${
     isRecord ? "New best saved." : `Best ${Math.floor(state.best).toLocaleString("en-US")}.`
-  } Survived ${formatTime(state.elapsed)}, collected ${state.shardsCollected} shards, grazed ${state.grazes} times. Press R to relaunch.`;
+  } ${medal}. ${trend} Survived ${formatTime(state.elapsed)}, collected ${state.shardsCollected} shards, grazed ${state.grazes} times. Press R to relaunch.`;
   ui.startButton.textContent = "Relaunch";
   updateHud();
+}
+
+function getRunMedal(score, seconds, grazes) {
+  if (score >= 5000 || seconds >= 180 || grazes >= 35) return "Legend run";
+  if (score >= 2800 || seconds >= 110 || grazes >= 20) return "Ace run";
+  if (score >= 1400 || seconds >= 65 || grazes >= 10) return "Clean run";
+  return "Recovered salvage";
+}
+
+function getTrendLabel(score, runs) {
+  if (runs.length < 2) return "Building run history.";
+  const average = runs.reduce((total, run) => total + run.score, 0) / runs.length;
+  const delta = score - average;
+  if (Math.abs(delta) < 120) return "Close to recent average.";
+  const direction = delta > 0 ? "above" : "below";
+  return `${Math.abs(Math.round(delta)).toLocaleString("en-US")} ${direction} recent average.`;
 }
 
 function formatTime(seconds) {
