@@ -14,6 +14,7 @@ const ui = {
   overlayCopy: document.querySelector("#overlay-copy"),
   upgradeGrid: document.querySelector("#upgrade-grid"),
   startButton: document.querySelector("#start-button"),
+  dashButton: document.querySelector("#dash-button"),
 };
 
 const storageKey = "neon-salvage-best";
@@ -169,6 +170,7 @@ function resetGame() {
   ui.module.textContent = "Collector I";
   ui.objective.textContent = "Fill charge";
   ui.startButton.textContent = "Launch";
+  updateDashButton();
   updateHud();
 }
 
@@ -473,10 +475,19 @@ function updateHud() {
   ui.charge.textContent = `${Math.floor(state.charge)}%`;
   ui.hull.textContent = `${Math.ceil(player.hull)}%`;
   ui.wave.textContent = `${state.wave}`;
+  updateDashButton();
   if (state.running && !state.paused && !state.over) {
     ui.objective.textContent =
       state.charge >= 70 ? "Almost upgraded" : player.hull <= 35 ? "Protect hull" : "Collect shards";
   }
+}
+
+function updateDashButton() {
+  const disabled =
+    !state.running || state.paused || state.over || state.choosingUpgrade || player.dashCooldown > 0;
+  ui.dashButton.disabled = disabled;
+  ui.dashButton.textContent =
+    player.dashCooldown > 0 ? `${Math.ceil(player.dashCooldown * 10) / 10}s` : "Dash";
 }
 
 function endGame() {
@@ -735,6 +746,11 @@ ui.startButton.addEventListener("click", () => {
   }
 });
 
+ui.dashButton.addEventListener("pointerdown", (event) => {
+  event.preventDefault();
+  dash();
+});
+
 window.addEventListener("resize", () => {
   resizeBackingStore();
   if (!state.running) {
@@ -746,5 +762,6 @@ window.addEventListener("resize", () => {
 resizeBackingStore();
 state.stars = createStars(110);
 updateHud();
+updateDashButton();
 draw();
 requestAnimationFrame(frame);
