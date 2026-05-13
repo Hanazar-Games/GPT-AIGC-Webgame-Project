@@ -87,6 +87,7 @@ def main():
     assert_contains("src/game.js", "requestAnimationFrame(frame)")
     assert_contains("src/styles.css", "@media (max-width: 760px)")
     assert_contains("README.md", "python3 tests/smoke.py")
+    assert_contains("docs/OPERATIONS.md", "browsers block audio before user interaction")
 
     print("Smoke checks passed.")
 

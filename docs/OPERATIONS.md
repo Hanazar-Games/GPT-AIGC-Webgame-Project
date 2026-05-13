@@ -28,9 +28,11 @@ Open `http://localhost:4173`.
 - Red debris damages hull.
 - `P` pauses and resumes.
 - `R` restarts after a loss.
+- Audio toggle switches between Audio and Muted after a user gesture.
 
 ## Incident Notes
 
 - If Pages deploy fails before upload, check the smoke test output first.
 - If the page is blank, verify `index.html` still points to `src/styles.css` and `src/game.js`.
 - If gameplay feels too punishing, tune hazard spawn timing in `src/game.js`.
+- If audio is silent, click Launch or Audio first; browsers block audio before user interaction.

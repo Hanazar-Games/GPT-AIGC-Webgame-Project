@@ -38,6 +38,7 @@ Wave 4 and beyond can spawn elite seeker debris.
 - `tests/smoke.py` - repository smoke checks for required files and browser-facing markup
 
 The game stores the best score in browser `localStorage`. It also rewards near misses and uses short invulnerability windows to keep collisions readable.
+Audio mute preference and recent run history are stored locally in the browser.
 
 ## Verify
 
