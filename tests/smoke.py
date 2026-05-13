@@ -28,9 +28,13 @@ def main():
             raise AssertionError(f"Missing required file: {item}")
 
     assert_contains("index.html", '<canvas id="game"')
+    assert_contains("index.html", 'id="best"')
+    assert_contains("index.html", 'id="objective"')
     assert_contains("index.html", 'type="module" src="src/game.js"')
     assert_contains("src/game.js", "function resetGame()")
     assert_contains("src/game.js", "function spawnHazard()")
+    assert_contains("src/game.js", "localStorage")
+    assert_contains("src/game.js", "function saveBestScore")
     assert_contains("src/game.js", "requestAnimationFrame(frame)")
     assert_contains("src/styles.css", "@media (max-width: 760px)")
     assert_contains("README.md", "python3 tests/smoke.py")

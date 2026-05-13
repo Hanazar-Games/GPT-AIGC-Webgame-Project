@@ -28,6 +28,8 @@ The game also supports pointer or touch movement on canvas.
 - `src/game.js` - engine, entities, difficulty, input, and rendering
 - `tests/smoke.py` - repository smoke checks for required files and browser-facing markup
 
+The game stores the best score in browser `localStorage`.
+
 ## Verify
 
 ```sh

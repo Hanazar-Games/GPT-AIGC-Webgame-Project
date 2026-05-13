@@ -6,12 +6,16 @@ const ui = {
   charge: document.querySelector("#charge"),
   hull: document.querySelector("#hull"),
   wave: document.querySelector("#wave"),
+  best: document.querySelector("#best"),
   module: document.querySelector("#module"),
   status: document.querySelector("#status"),
+  objective: document.querySelector("#objective"),
   overlay: document.querySelector("#overlay"),
   overlayCopy: document.querySelector("#overlay-copy"),
   startButton: document.querySelector("#start-button"),
 };
+
+const storageKey = "neon-salvage-best";
 
 const keys = new Set();
 const pointer = {
@@ -25,6 +29,7 @@ const state = {
   paused: false,
   over: false,
   score: 0,
+  best: loadBestScore(),
   charge: 0,
   wave: 1,
   elapsed: 0,
@@ -103,7 +108,26 @@ function resetGame() {
 
   ui.overlay.hidden = true;
   ui.status.textContent = "Harvesting";
+  ui.module.textContent = "Collector I";
+  ui.objective.textContent = "Fill charge";
+  ui.startButton.textContent = "Launch";
   updateHud();
+}
+
+function loadBestScore() {
+  try {
+    return Number.parseInt(localStorage.getItem(storageKey) || "0", 10) || 0;
+  } catch {
+    return 0;
+  }
+}
+
+function saveBestScore(value) {
+  try {
+    localStorage.setItem(storageKey, `${Math.floor(value)}`);
+  } catch {
+    // Some private browsing modes reject localStorage writes.
+  }
 }
 
 function createStars(count) {
@@ -193,6 +217,7 @@ function upgradeCollector() {
   player.speed += 10;
   ui.module.textContent = `Collector ${roman(player.collectorLevel)}`;
   ui.status.textContent = "Module upgraded";
+  ui.objective.textContent = player.collectorLevel % 2 === 0 ? "Stay alive" : "Fill charge";
 }
 
 function roman(value) {
@@ -345,24 +370,41 @@ function updateBursts(dt) {
 
 function updateHud() {
   ui.score.textContent = Math.floor(state.score).toLocaleString("en-US");
+  ui.best.textContent = Math.floor(state.best).toLocaleString("en-US");
   ui.charge.textContent = `${Math.floor(state.charge)}%`;
   ui.hull.textContent = `${Math.ceil(player.hull)}%`;
   ui.wave.textContent = `${state.wave}`;
+  if (state.running && !state.paused && !state.over) {
+    ui.objective.textContent =
+      state.charge >= 70 ? "Almost upgraded" : player.hull <= 35 ? "Protect hull" : "Collect shards";
+  }
 }
 
 function endGame() {
+  const finalScore = Math.floor(state.score);
+  const isRecord = finalScore > state.best;
+  if (isRecord) {
+    state.best = finalScore;
+    saveBestScore(state.best);
+  }
+
   state.over = true;
   state.running = false;
-  ui.status.textContent = "Drone lost";
+  ui.status.textContent = isRecord ? "New record" : "Drone lost";
+  ui.objective.textContent = "Relaunch ready";
   ui.overlay.hidden = false;
-  ui.overlayCopy.textContent = `Final score ${Math.floor(state.score).toLocaleString("en-US")}. Press R to relaunch.`;
+  ui.overlayCopy.textContent = `Final score ${finalScore.toLocaleString("en-US")}. ${
+    isRecord ? "New best saved." : `Best ${Math.floor(state.best).toLocaleString("en-US")}.`
+  } Press R to relaunch.`;
   ui.startButton.textContent = "Relaunch";
+  updateHud();
 }
 
 function togglePause() {
   if (!state.running || state.over) return;
   state.paused = !state.paused;
   ui.status.textContent = state.paused ? "Paused" : "Harvesting";
+  ui.objective.textContent = state.paused ? "Resume run" : "Collect shards";
   ui.overlay.hidden = !state.paused;
   ui.overlayCopy.textContent = "Systems paused. Press P to resume.";
   ui.startButton.textContent = "Resume";
@@ -583,5 +625,6 @@ window.addEventListener("resize", () => {
 
 resizeBackingStore();
 state.stars = createStars(110);
+updateHud();
 draw();
 requestAnimationFrame(frame);
