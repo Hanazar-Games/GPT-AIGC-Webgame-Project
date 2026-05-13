@@ -25,11 +25,12 @@ const upgrades = [
   {
     id: "collector",
     name: "Collector",
-    description: "Wider magnet field and faster shard pull.",
+    description: "Wider magnet field, faster shard pull, and better shard value.",
     apply() {
       player.collectorLevel += 1;
       player.magnet += 22;
       player.pullStrength += 32;
+      player.shardMultiplier += 0.12;
       return `Collector ${roman(player.collectorLevel)}`;
     },
   },
@@ -46,11 +47,12 @@ const upgrades = [
   {
     id: "shield",
     name: "Shield",
-    description: "Repair hull and lengthen the safety window after hits.",
+    description: "Repair hull, lengthen hit safety, and pulse nearby debris.",
     apply() {
       player.shieldLevel += 1;
       player.hull = clamp(player.hull + 24, 0, 100);
       player.invulnerableBonus += 0.12;
+      player.pulseRadius += 24;
       return `Shield ${roman(player.shieldLevel)}`;
     },
   },
@@ -99,6 +101,8 @@ const player = {
   invulnerableBonus: 0,
   magnet: 92,
   pullStrength: 180,
+  shardMultiplier: 1,
+  pulseRadius: 0,
   collectorLevel: 1,
   thrusterLevel: 1,
   shieldLevel: 1,
@@ -160,6 +164,8 @@ function resetGame() {
   player.invulnerableBonus = 0;
   player.magnet = 92;
   player.pullStrength = 180;
+  player.shardMultiplier = 1;
+  player.pulseRadius = 0;
   player.collectorLevel = 1;
   player.thrusterLevel = 1;
   player.shieldLevel = 1;
@@ -421,7 +427,7 @@ function updateShards(dt) {
     if (distance(player, shard) < player.radius + shard.radius) {
       state.shards.splice(i, 1);
       state.shardsCollected += 1;
-      state.score += shard.value * 9;
+      state.score += shard.value * 9 * player.shardMultiplier;
       state.charge = clamp(state.charge + shard.value, 0, 100);
       addBurst(shard.x, shard.y, "#72f2a0", 8);
 
@@ -484,11 +490,31 @@ function updateHazards(dt) {
       player.invulnerableTimer = 0.8 + player.invulnerableBonus;
       state.shake = 8;
       addBurst(player.x, player.y, "#ff5f7e", 18);
+      triggerShieldPulse();
 
       if (player.hull <= 0) {
         endGame();
       }
     }
+  }
+}
+
+function triggerShieldPulse() {
+  if (player.pulseRadius <= 0) return;
+
+  let cleared = 0;
+  for (let i = state.hazards.length - 1; i >= 0; i -= 1) {
+    const hazard = state.hazards[i];
+    if (distance(player, hazard) <= player.pulseRadius + hazard.radius) {
+      state.hazards.splice(i, 1);
+      cleared += 1;
+      addBurst(hazard.x, hazard.y, "#39d8ff", hazard.elite ? 16 : 8);
+    }
+  }
+
+  if (cleared > 0) {
+    state.score += cleared * (80 + state.wave * 12);
+    ui.status.textContent = `Pulse cleared ${cleared}`;
   }
 }
 
@@ -729,6 +755,16 @@ function drawPlayer() {
   ctx.beginPath();
   ctx.arc(0, 0, player.magnet, 0, Math.PI * 2);
   ctx.fill();
+
+  if (player.pulseRadius > 0) {
+    ctx.strokeStyle = "rgba(57, 216, 255, 0.22)";
+    ctx.lineWidth = 2;
+    ctx.setLineDash([8, 12]);
+    ctx.beginPath();
+    ctx.arc(0, 0, player.pulseRadius, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.setLineDash([]);
+  }
 
   ctx.fillStyle = player.dashTimer > 0 ? "#ffd166" : "#39d8ff";
   ctx.strokeStyle = "#eafcff";
