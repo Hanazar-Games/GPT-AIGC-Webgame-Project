@@ -20,7 +20,7 @@ This project is operated as a living solo webgame. Each cycle should leave the g
 
 - Add deterministic simulation tests once a JavaScript runtime is available in the environment.
 - Add screenshot checks through the Browser plugin when the runtime tools are exposed.
-- Split `src/game.js` into engine, entities, rendering, and input modules when the file crosses roughly 900 lines.
+- Continue splitting `src/game.js` into engine, entities, rendering, audio, and input modules.
 
 ## Release Quality Bar
 

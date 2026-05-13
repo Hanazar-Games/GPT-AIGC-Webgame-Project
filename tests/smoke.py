@@ -1,5 +1,6 @@
 from html.parser import HTMLParser
 from pathlib import Path
+import re
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -38,11 +39,20 @@ def assert_referenced_assets_exist():
             raise AssertionError(f"Referenced asset does not exist: {asset}")
 
 
+def assert_local_imports_exist(path):
+    content = read(path)
+    for match in re.finditer(r'from\s+["\'](\./[^"\']+)["\']', content):
+        target = (ROOT / path).parent / match.group(1)
+        if not target.exists():
+            raise AssertionError(f"Referenced import does not exist: {match.group(1)}")
+
+
 def main():
     required = [
         "index.html",
         "src/styles.css",
         "src/game.js",
+        "src/achievements.js",
         "README.md",
         "LICENSE",
     ]
@@ -52,6 +62,7 @@ def main():
             raise AssertionError(f"Missing required file: {item}")
 
     assert_referenced_assets_exist()
+    assert_local_imports_exist("src/game.js")
 
     assert_contains("index.html", '<canvas id="game"')
     assert_contains("index.html", 'id="best"')
@@ -76,7 +87,9 @@ def main():
     assert_contains("src/game.js", "function getRunMedal")
     assert_contains("src/game.js", "function getTrendLabel")
     assert_contains("src/game.js", "function unlockAchievements")
-    assert_contains("src/game.js", "achievementDefinitions")
+    assert_contains("src/game.js", 'from "./achievements.js"')
+    assert_contains("src/achievements.js", "achievementDefinitions")
+    assert_contains("src/achievements.js", "function getNewAchievementUnlocks")
     assert_contains("src/game.js", "shardsCollected")
     assert_contains("src/game.js", "grazes")
     assert_contains("src/game.js", "Final module")

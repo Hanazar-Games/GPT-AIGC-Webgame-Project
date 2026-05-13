@@ -1,3 +1,5 @@
+import { formatAchievementUnlocks, getNewAchievementUnlocks } from "./achievements.js";
+
 const canvas = document.querySelector("#game");
 const ctx = canvas.getContext("2d");
 
@@ -70,49 +72,6 @@ const upgrades = [
       player.pulseRadius += 24;
       return `Shield ${roman(player.shieldLevel)} ${Math.round(player.pulseRadius)}r`;
     },
-  },
-];
-
-const achievementDefinitions = [
-  {
-    id: "clean-run",
-    name: "Clean Run",
-    earned: (run) => ["Clean run", "Ace run", "Legend run"].includes(run.medal),
-  },
-  {
-    id: "ace-run",
-    name: "Ace Run",
-    earned: (run) => ["Ace run", "Legend run"].includes(run.medal),
-  },
-  {
-    id: "legend-run",
-    name: "Legend Run",
-    earned: (run) => run.medal === "Legend run",
-  },
-  {
-    id: "graze-tech",
-    name: "Graze Tech",
-    earned: (run) => run.grazes >= 15,
-  },
-  {
-    id: "deep-field",
-    name: "Deep Field",
-    earned: (run) => run.wave >= 5,
-  },
-  {
-    id: "collector-line",
-    name: "Collector Line",
-    earned: (run) => run.module.startsWith("Collector") && run.module !== "Collector I",
-  },
-  {
-    id: "thruster-line",
-    name: "Thruster Line",
-    earned: (run) => run.module.startsWith("Thrusters"),
-  },
-  {
-    id: "shield-line",
-    name: "Shield Line",
-    earned: (run) => run.module.startsWith("Shield"),
   },
 ];
 
@@ -293,22 +252,14 @@ function saveAchievementIds() {
 }
 
 function unlockAchievements(run) {
-  const unlocked = [];
-  for (const achievement of achievementDefinitions) {
-    if (!state.achievements.has(achievement.id) && achievement.earned(run)) {
-      state.achievements.add(achievement.id);
-      unlocked.push(achievement.name);
-    }
+  const unlocked = getNewAchievementUnlocks(state.achievements, run);
+  for (const achievement of unlocked) {
+    state.achievements.add(achievement.id);
   }
   if (unlocked.length > 0) {
     saveAchievementIds();
   }
   return unlocked;
-}
-
-function formatAchievementUnlocks(unlocked) {
-  if (unlocked.length === 0) return "";
-  return ` Unlocked: ${unlocked.join(", ")}.`;
 }
 
 function loadMuted() {
