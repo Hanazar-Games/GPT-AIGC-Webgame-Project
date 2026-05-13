@@ -20,6 +20,7 @@ const ui = {
 
 const bestScoreKey = "neon-salvage-best";
 const runHistoryKey = "neon-salvage-runs";
+const achievementKey = "neon-salvage-achievements";
 const audioMuteKey = "neon-salvage-muted";
 const baseDashCooldown = 1.15;
 
@@ -72,6 +73,49 @@ const upgrades = [
   },
 ];
 
+const achievementDefinitions = [
+  {
+    id: "clean-run",
+    name: "Clean Run",
+    earned: (run) => ["Clean run", "Ace run", "Legend run"].includes(run.medal),
+  },
+  {
+    id: "ace-run",
+    name: "Ace Run",
+    earned: (run) => ["Ace run", "Legend run"].includes(run.medal),
+  },
+  {
+    id: "legend-run",
+    name: "Legend Run",
+    earned: (run) => run.medal === "Legend run",
+  },
+  {
+    id: "graze-tech",
+    name: "Graze Tech",
+    earned: (run) => run.grazes >= 15,
+  },
+  {
+    id: "deep-field",
+    name: "Deep Field",
+    earned: (run) => run.wave >= 5,
+  },
+  {
+    id: "collector-line",
+    name: "Collector Line",
+    earned: (run) => run.module.startsWith("Collector") && run.module !== "Collector I",
+  },
+  {
+    id: "thruster-line",
+    name: "Thruster Line",
+    earned: (run) => run.module.startsWith("Thrusters"),
+  },
+  {
+    id: "shield-line",
+    name: "Shield Line",
+    earned: (run) => run.module.startsWith("Shield"),
+  },
+];
+
 const keys = new Set();
 const pointer = {
   active: false,
@@ -87,6 +131,7 @@ const state = {
   score: 0,
   best: loadBestScore(),
   recentRuns: loadRunHistory(),
+  achievements: loadAchievementIds(),
   charge: 0,
   wave: 1,
   elapsed: 0,
@@ -228,6 +273,42 @@ function saveRunHistory(runs) {
   } catch {
     // Best-effort only; gameplay should never depend on storage.
   }
+}
+
+function loadAchievementIds() {
+  try {
+    const ids = JSON.parse(localStorage.getItem(achievementKey) || "[]");
+    return new Set(Array.isArray(ids) ? ids.filter((id) => typeof id === "string") : []);
+  } catch {
+    return new Set();
+  }
+}
+
+function saveAchievementIds() {
+  try {
+    localStorage.setItem(achievementKey, JSON.stringify([...state.achievements]));
+  } catch {
+    // Achievement storage is best-effort.
+  }
+}
+
+function unlockAchievements(run) {
+  const unlocked = [];
+  for (const achievement of achievementDefinitions) {
+    if (!state.achievements.has(achievement.id) && achievement.earned(run)) {
+      state.achievements.add(achievement.id);
+      unlocked.push(achievement.name);
+    }
+  }
+  if (unlocked.length > 0) {
+    saveAchievementIds();
+  }
+  return unlocked;
+}
+
+function formatAchievementUnlocks(unlocked) {
+  if (unlocked.length === 0) return "";
+  return ` Unlocked: ${unlocked.join(", ")}.`;
 }
 
 function loadMuted() {
@@ -720,6 +801,7 @@ function endGame() {
   }
   state.recentRuns = [runSummary, ...state.recentRuns].slice(0, 5);
   saveRunHistory(state.recentRuns);
+  const unlockedAchievements = unlockAchievements(runSummary);
 
   state.over = true;
   state.running = false;
@@ -729,7 +811,7 @@ function endGame() {
   ui.overlay.hidden = false;
   ui.overlayCopy.textContent = `Final score ${finalScore.toLocaleString("en-US")}. ${
     isRecord ? "New best saved." : `Best ${Math.floor(state.best).toLocaleString("en-US")}.`
-  } ${medal}. ${trend} Final module: ${ui.module.textContent}. Survived ${formatTime(state.elapsed)}, collected ${state.shardsCollected} shards, grazed ${state.grazes} times. Press R to relaunch.`;
+  } ${medal}. ${trend} Final module: ${ui.module.textContent}. Survived ${formatTime(state.elapsed)}, collected ${state.shardsCollected} shards, grazed ${state.grazes} times.${formatAchievementUnlocks(unlockedAchievements)} Press R to relaunch.`;
   ui.startButton.textContent = "Relaunch";
   playEventSound("gameover");
   updateHud();

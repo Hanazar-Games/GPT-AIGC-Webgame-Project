@@ -31,6 +31,7 @@ Upgrade cards use branch colors and tags for quick scanning.
 End-of-run results include survival time, shards collected, and near-miss grazes.
 They also show the final module state for the run.
 The last five runs are tracked locally for trend feedback.
+Achievement unlocks are stored locally for long-term goals.
 Wave 4 and beyond can spawn elite seeker debris.
 
 ## Project Shape
