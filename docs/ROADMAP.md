@@ -11,7 +11,7 @@ This project is operated as a living solo webgame. Each cycle should leave the g
 ## Next Gameplay
 
 - Add shield pulse and shard multiplier as deeper branch upgrades.
-- Add elite debris patterns after wave 4.
+- Add more elite debris patterns after wave 6.
 - Add richer end-of-run medals and personal trend tracking.
 - Improve mobile ergonomics with aim assist tuning and thumb-zone polish.
 

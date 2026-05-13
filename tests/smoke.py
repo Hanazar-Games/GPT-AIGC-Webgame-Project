@@ -41,6 +41,8 @@ def main():
     assert_contains("src/game.js", "function formatTime")
     assert_contains("src/game.js", "shardsCollected")
     assert_contains("src/game.js", "grazes")
+    assert_contains("src/game.js", "seeker")
+    assert_contains("src/game.js", "elite")
     assert_contains("src/game.js", "localStorage")
     assert_contains("src/game.js", "function saveBestScore")
     assert_contains("src/game.js", "invulnerableTimer")
