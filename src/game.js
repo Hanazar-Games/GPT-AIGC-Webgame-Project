@@ -31,7 +31,7 @@ const upgrades = [
       player.magnet += 22;
       player.pullStrength += 32;
       player.shardMultiplier += 0.12;
-      return `Collector ${roman(player.collectorLevel)}`;
+      return `Collector ${roman(player.collectorLevel)} x${player.shardMultiplier.toFixed(2)}`;
     },
   },
   {
@@ -41,7 +41,7 @@ const upgrades = [
     apply() {
       player.speed += 34;
       player.dashCooldownMax = Math.max(0.68, player.dashCooldownMax - 0.12);
-      return `Thrusters ${roman(player.thrusterLevel += 1)}`;
+      return `Thrusters ${roman(player.thrusterLevel += 1)} ${player.dashCooldownMax.toFixed(2)}s`;
     },
   },
   {
@@ -53,7 +53,7 @@ const upgrades = [
       player.hull = clamp(player.hull + 24, 0, 100);
       player.invulnerableBonus += 0.12;
       player.pulseRadius += 24;
-      return `Shield ${roman(player.shieldLevel)}`;
+      return `Shield ${roman(player.shieldLevel)} ${Math.round(player.pulseRadius)}r`;
     },
   },
 ];

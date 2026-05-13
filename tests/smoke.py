@@ -73,6 +73,7 @@ def main():
     assert_contains("src/game.js", "runHistoryKey")
     assert_contains("src/game.js", "shardMultiplier")
     assert_contains("src/game.js", "pulseRadius")
+    assert_contains("src/game.js", "toFixed")
     assert_contains("src/game.js", "seeker")
     assert_contains("src/game.js", "elite")
     assert_contains("src/game.js", "localStorage")
