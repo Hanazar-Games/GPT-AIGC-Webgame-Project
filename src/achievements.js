@@ -41,6 +41,8 @@ export const achievementDefinitions = [
   },
 ];
 
+export const achievementTotal = achievementDefinitions.length;
+
 export function getNewAchievementUnlocks(existingIds, run) {
   return achievementDefinitions.filter(
     (achievement) => !existingIds.has(achievement.id) && achievement.earned(run),

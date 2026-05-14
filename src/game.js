@@ -1,4 +1,4 @@
-import { formatAchievementUnlocks, getNewAchievementUnlocks } from "./achievements.js";
+import { achievementTotal, formatAchievementUnlocks, getNewAchievementUnlocks } from "./achievements.js";
 import {
   ensureAudio,
   isAudioMuted,
@@ -154,6 +154,7 @@ function resetGame() {
   ui.status.textContent = "Harvesting";
   ui.module.textContent = "Collector I";
   ui.objective.textContent = "Fill charge";
+  ui.overlayCopy.textContent = "Collect shards, dodge debris, and overclock your salvage drone.";
   ui.startButton.textContent = "Launch";
   updateAudioButton();
   updateDashButton();
@@ -219,6 +220,10 @@ function unlockAchievements(run) {
     saveAchievementIds();
   }
   return unlocked;
+}
+
+function getAchievementSummary() {
+  return `Achievements ${state.achievements.size}/${achievementTotal}`;
 }
 
 function updateMusicLayer() {
@@ -610,7 +615,7 @@ function endGame() {
   ui.overlay.hidden = false;
   ui.overlayCopy.textContent = `Final score ${finalScore.toLocaleString("en-US")}. ${
     isRecord ? "New best saved." : `Best ${Math.floor(state.best).toLocaleString("en-US")}.`
-  } ${medal}. ${trend} Final module: ${ui.module.textContent}. Survived ${formatTime(state.elapsed)}, collected ${state.shardsCollected} shards, grazed ${state.grazes} times.${formatAchievementUnlocks(unlockedAchievements)} Press R to relaunch.`;
+  } ${medal}. ${trend} Final module: ${ui.module.textContent}. Survived ${formatTime(state.elapsed)}, collected ${state.shardsCollected} shards, grazed ${state.grazes} times.${formatAchievementUnlocks(unlockedAchievements)} ${getAchievementSummary()}. Press R to relaunch.`;
   ui.startButton.textContent = "Relaunch";
   playEventSound("gameover");
   updateHud();
@@ -645,7 +650,7 @@ function togglePause() {
   ui.status.textContent = state.paused ? "Paused" : "Harvesting";
   ui.objective.textContent = state.paused ? "Resume run" : "Collect shards";
   ui.overlay.hidden = !state.paused;
-  ui.overlayCopy.textContent = "Systems paused. Press P to resume.";
+  ui.overlayCopy.textContent = `Systems paused. ${getAchievementSummary()}. Press P to resume.`;
   ui.startButton.textContent = "Resume";
   if (!state.paused) {
     state.lastTime = performance.now();
