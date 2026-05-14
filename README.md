@@ -34,6 +34,7 @@ The last five runs are tracked locally for trend feedback.
 Achievement unlocks are stored locally for long-term goals.
 Pause and end screens show achievement progress.
 Use the Achievements control to review unlocked and locked achievements.
+Achievement cards include unlock hints.
 Wave 4 and beyond can spawn elite seeker debris.
 
 ## Project Shape

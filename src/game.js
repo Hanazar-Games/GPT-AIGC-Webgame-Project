@@ -262,7 +262,7 @@ function openAchievementsOverlay() {
     const item = document.createElement("div");
     const unlocked = state.achievements.has(achievement.id);
     item.className = `achievement-item${unlocked ? " is-unlocked" : ""}`;
-    item.innerHTML = `<span>${unlocked ? "Unlocked" : "Locked"}</span><strong>${achievement.name}</strong>`;
+    item.innerHTML = `<span>${unlocked ? "Unlocked" : "Locked"}</span><strong>${achievement.name}</strong><small>${achievement.hint}</small>`;
     ui.achievementList.append(item);
   }
 }
