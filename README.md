@@ -37,6 +37,7 @@ Use the Achievements control to review unlocked and locked achievements.
 Achievement cards include unlock hints.
 Some cards show progress based on recent runs and the current run.
 Wave 4 and beyond can spawn elite seeker debris; wave 6 adds splitter debris.
+Shield pulse can turn splitters into smaller debris and feed achievement progress.
 
 ## Project Shape
 

@@ -66,6 +66,7 @@ const state = {
   elapsed: 0,
   shardsCollected: 0,
   grazes: 0,
+  splittersControlled: 0,
   spawnTimer: 0,
   shardTimer: 0,
   shake: 0,
@@ -134,6 +135,7 @@ function resetGame() {
   state.elapsed = 0;
   state.shardsCollected = 0;
   state.grazes = 0;
+  state.splittersControlled = 0;
   state.spawnTimer = 0;
   state.shardTimer = 0;
   state.shake = 0;
@@ -263,6 +265,7 @@ function openAchievementsOverlay() {
     grazes: state.grazes,
     wave: state.wave,
     module: ui.module.textContent,
+    splittersControlled: state.splittersControlled,
   });
 
   for (const achievement of achievementDefinitions) {
@@ -641,6 +644,7 @@ function triggerShieldPulse() {
       state.hazards.splice(i, 1);
       cleared += 1;
       if (hazard.type === "splitter") {
+        state.splittersControlled += 1;
         spawnSplitterFragments(hazard);
       }
       addBurst(hazard.x, hazard.y, "#39d8ff", hazard.elite ? 16 : 8);
@@ -700,6 +704,7 @@ function endGame() {
     seconds: Math.floor(state.elapsed),
     shards: state.shardsCollected,
     grazes: state.grazes,
+    splittersControlled: state.splittersControlled,
     module: ui.module.textContent,
     medal,
   };

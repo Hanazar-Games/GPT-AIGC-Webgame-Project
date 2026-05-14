@@ -113,6 +113,8 @@ def main():
     assert_contains("src/upgrades.js", "toFixed")
     assert_contains("src/game.js", "seeker")
     assert_contains("src/game.js", "splitter")
+    assert_contains("src/game.js", "splittersControlled")
+    assert_contains("src/achievements.js", "splitter-control")
     assert_contains("src/game.js", "function spawnSplitterFragments")
     assert_contains("src/game.js", "elite")
     assert_contains("src/game.js", "localStorage")

@@ -55,6 +55,13 @@ export const achievementDefinitions = [
     progress: (stats) => branchProgress(stats.modules, "Shield"),
     earned: (run) => run.module.startsWith("Shield"),
   },
+  {
+    id: "splitter-control",
+    name: "Splitter Control",
+    hint: "Break up at least 2 splitter debris with Shield pulse in one run.",
+    progress: (stats) => countProgress(stats.bestSplittersControlled, 2, "splitters"),
+    earned: (run) => run.splittersControlled >= 2,
+  },
 ];
 
 export const achievementTotal = achievementDefinitions.length;
@@ -79,12 +86,14 @@ export function getAchievementStats(runs, current = {}) {
     (stats, run) => ({
       bestGrazes: Math.max(stats.bestGrazes, run.grazes || 0),
       bestWave: Math.max(stats.bestWave, run.wave || 0),
+      bestSplittersControlled: Math.max(stats.bestSplittersControlled, run.splittersControlled || 0),
       bestMedalRank: Math.max(stats.bestMedalRank, medalRank(run.medal)),
       modules: [...stats.modules, run.module || ""],
     }),
     {
       bestGrazes: current.grazes || 0,
       bestWave: current.wave || 1,
+      bestSplittersControlled: current.splittersControlled || 0,
       bestMedalRank: 0,
       modules: [current.module || ""],
     },
