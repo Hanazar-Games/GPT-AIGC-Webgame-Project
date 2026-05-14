@@ -34,6 +34,7 @@ Open `http://localhost:4173`.
 ## Incident Notes
 
 - If Pages deploy fails before upload, check the smoke test output first.
+- On non-macOS runners, the optional `osascript` JavaScript parse is skipped.
 - If the page is blank, verify `index.html` still points to `src/styles.css` and `src/game.js`.
 - If gameplay feels too punishing, tune hazard spawn timing in `src/game.js`.
 - If audio is silent, click Launch or Audio first; browsers block audio before user interaction.

@@ -59,6 +59,7 @@ python3 tests/smoke.py
 ```
 
 No package install is required for the current version.
+On macOS, the smoke test also parses JavaScript modules with `osascript`; other platforms skip that optional parse.
 
 ## Deploy
 

@@ -1,6 +1,8 @@
 from html.parser import HTMLParser
 from pathlib import Path
 import re
+import shutil
+import subprocess
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -47,6 +49,35 @@ def assert_local_imports_exist(path):
             raise AssertionError(f"Referenced import does not exist: {match.group(1)}")
 
 
+def assert_js_modules_parse():
+    osascript = shutil.which("osascript")
+    if not osascript:
+        print("Skipping JS syntax parse; osascript is unavailable.")
+        return
+
+    modules = [
+        "src/game.js",
+        "src/achievements.js",
+        "src/audio.js",
+        "src/upgrades.js",
+    ]
+
+    for module in modules:
+        source = read(module)
+        source = re.sub(r"import[\s\S]*?;\n", "", source)
+        source = source.replace("export const ", "const ")
+        source = source.replace("export function ", "function ")
+        script = f"const src = {source!r};\nnew Function(src);\n"
+        result = subprocess.run(
+            [osascript, "-l", "JavaScript", "-e", script],
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        if result.returncode:
+            raise AssertionError(f"{module} failed syntax parse:\n{result.stderr or result.stdout}")
+
+
 def main():
     required = [
         "index.html",
@@ -65,6 +96,7 @@ def main():
 
     assert_referenced_assets_exist()
     assert_local_imports_exist("src/game.js")
+    assert_js_modules_parse()
 
     assert_contains("index.html", '<canvas id="game"')
     assert_contains("index.html", 'id="best"')
