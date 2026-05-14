@@ -7,6 +7,7 @@ import {
   toggleAudioMuted,
   updateMusicLayer as updateAudioPressure,
 } from "./audio.js";
+import { upgrades } from "./upgrades.js";
 
 const canvas = document.querySelector("#game");
 const ctx = canvas.getContext("2d");
@@ -32,49 +33,6 @@ const bestScoreKey = "neon-salvage-best";
 const runHistoryKey = "neon-salvage-runs";
 const achievementKey = "neon-salvage-achievements";
 const baseDashCooldown = 1.15;
-
-const upgrades = [
-  {
-    id: "collector",
-    name: "Collector",
-    tag: "Harvest",
-    tone: "green",
-    description: "Wider magnet field, faster shard pull, and better shard value.",
-    apply() {
-      player.collectorLevel += 1;
-      player.magnet += 22;
-      player.pullStrength += 32;
-      player.shardMultiplier += 0.12;
-      return `Collector ${roman(player.collectorLevel)} x${player.shardMultiplier.toFixed(2)}`;
-    },
-  },
-  {
-    id: "thrusters",
-    name: "Thrusters",
-    tag: "Velocity",
-    tone: "amber",
-    description: "Higher move speed and shorter dash cooldown.",
-    apply() {
-      player.speed += 34;
-      player.dashCooldownMax = Math.max(0.68, player.dashCooldownMax - 0.12);
-      return `Thrusters ${roman(player.thrusterLevel += 1)} ${player.dashCooldownMax.toFixed(2)}s`;
-    },
-  },
-  {
-    id: "shield",
-    name: "Shield",
-    tag: "Defense",
-    tone: "cyan",
-    description: "Repair hull, lengthen hit safety, and pulse nearby debris.",
-    apply() {
-      player.shieldLevel += 1;
-      player.hull = clamp(player.hull + 24, 0, 100);
-      player.invulnerableBonus += 0.12;
-      player.pulseRadius += 24;
-      return `Shield ${roman(player.shieldLevel)} ${Math.round(player.pulseRadius)}r`;
-    },
-  },
-];
 
 const keys = new Set();
 const pointer = {
@@ -388,7 +346,7 @@ function openUpgradeChoice() {
 }
 
 function applyUpgrade(upgrade) {
-  const label = upgrade.apply();
+  const label = upgrade.apply(player);
   state.choosingUpgrade = false;
   state.lastTime = performance.now();
   ui.module.textContent = label;
@@ -400,11 +358,6 @@ function applyUpgrade(upgrade) {
   ui.startButton.hidden = false;
   addBurst(player.x, player.y, "#39d8ff", 28);
   playEventSound("upgrade");
-}
-
-function roman(value) {
-  const numerals = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII"];
-  return numerals[Math.min(value, numerals.length) - 1] || `${value}`;
 }
 
 function update(dt) {

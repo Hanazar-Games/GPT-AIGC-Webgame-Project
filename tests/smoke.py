@@ -54,6 +54,7 @@ def main():
         "src/game.js",
         "src/achievements.js",
         "src/audio.js",
+        "src/upgrades.js",
         "README.md",
         "LICENSE",
     ]
@@ -76,8 +77,9 @@ def main():
     assert_contains("src/game.js", "function spawnHazard()")
     assert_contains("src/game.js", "function openUpgradeChoice")
     assert_contains("src/game.js", "function applyUpgrade")
+    assert_contains("src/game.js", 'from "./upgrades.js"')
     assert_contains("src/game.js", "upgrade-choice--")
-    assert_contains("src/game.js", "tag")
+    assert_contains("src/upgrades.js", "tag")
     assert_contains("src/game.js", "function updateDashButton")
     assert_contains("src/game.js", 'from "./audio.js"')
     assert_contains("src/audio.js", "function playEventSound")
@@ -99,7 +101,7 @@ def main():
     assert_contains("src/game.js", "achievementKey")
     assert_contains("src/game.js", "shardMultiplier")
     assert_contains("src/game.js", "pulseRadius")
-    assert_contains("src/game.js", "toFixed")
+    assert_contains("src/upgrades.js", "toFixed")
     assert_contains("src/game.js", "seeker")
     assert_contains("src/game.js", "elite")
     assert_contains("src/game.js", "localStorage")

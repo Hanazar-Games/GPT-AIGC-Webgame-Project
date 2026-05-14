@@ -41,6 +41,7 @@ Wave 4 and beyond can spawn elite seeker debris.
 - `src/game.js` - engine, entities, difficulty, input, and rendering
 - `src/achievements.js` - achievement definitions and unlock rules
 - `src/audio.js` - synthesized event audio and pressure music
+- `src/upgrades.js` - upgrade branch data and stat mutation rules
 - `tests/smoke.py` - repository smoke checks for required files and browser-facing markup
 
 The game stores the best score in browser `localStorage`. It also rewards near misses and uses short invulnerability windows to keep collisions readable.
