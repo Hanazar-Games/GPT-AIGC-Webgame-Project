@@ -100,6 +100,8 @@ def main():
     assert_contains("src/achievements.js", "achievementDefinitions")
     assert_contains("src/achievements.js", "achievementTotal")
     assert_contains("src/achievements.js", "hint")
+    assert_contains("src/achievements.js", "function getAchievementProgress")
+    assert_contains("src/achievements.js", "function getAchievementStats")
     assert_contains("src/achievements.js", "function getNewAchievementUnlocks")
     assert_contains("src/game.js", "shardsCollected")
     assert_contains("src/game.js", "grazes")

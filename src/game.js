@@ -2,6 +2,8 @@ import {
   achievementDefinitions,
   achievementTotal,
   formatAchievementUnlocks,
+  getAchievementProgress,
+  getAchievementStats,
   getNewAchievementUnlocks,
 } from "./achievements.js";
 import {
@@ -257,12 +259,17 @@ function openAchievementsOverlay() {
   ui.startButton.textContent = wasRunning ? "Resume" : "Close";
   ui.status.textContent = "Achievements";
   ui.objective.textContent = "Review unlocks";
+  const achievementStats = getAchievementStats(state.recentRuns, {
+    grazes: state.grazes,
+    wave: state.wave,
+    module: ui.module.textContent,
+  });
 
   for (const achievement of achievementDefinitions) {
     const item = document.createElement("div");
     const unlocked = state.achievements.has(achievement.id);
     item.className = `achievement-item${unlocked ? " is-unlocked" : ""}`;
-    item.innerHTML = `<span>${unlocked ? "Unlocked" : "Locked"}</span><strong>${achievement.name}</strong><small>${achievement.hint}</small>`;
+    item.innerHTML = `<span>${unlocked ? "Unlocked" : "Locked"} / ${getAchievementProgress(achievement, achievementStats)}</span><strong>${achievement.name}</strong><small>${achievement.hint}</small>`;
     ui.achievementList.append(item);
   }
 }
