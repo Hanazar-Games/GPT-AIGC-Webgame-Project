@@ -13,7 +13,7 @@ This project is operated as a living solo webgame. Each cycle should leave the g
 - Add late-branch upgrade variants and selection history.
 - Add richer music motifs for upgrade branches.
 - Add more elite debris patterns after wave 6.
-- Add an achievements screen with individual unlock details.
+- Add achievement unlock descriptions and progress hints.
 - Improve mobile ergonomics with aim assist tuning and thumb-zone polish.
 
 ## Next Engineering

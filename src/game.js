@@ -1,4 +1,9 @@
-import { achievementTotal, formatAchievementUnlocks, getNewAchievementUnlocks } from "./achievements.js";
+import {
+  achievementDefinitions,
+  achievementTotal,
+  formatAchievementUnlocks,
+  getNewAchievementUnlocks,
+} from "./achievements.js";
 import {
   ensureAudio,
   isAudioMuted,
@@ -23,10 +28,12 @@ const ui = {
   objective: document.querySelector("#objective"),
   overlay: document.querySelector("#overlay"),
   overlayCopy: document.querySelector("#overlay-copy"),
+  achievementList: document.querySelector("#achievement-list"),
   upgradeGrid: document.querySelector("#upgrade-grid"),
   startButton: document.querySelector("#start-button"),
   dashButton: document.querySelector("#dash-button"),
   audioButton: document.querySelector("#audio-button"),
+  achievementsButton: document.querySelector("#achievements-button"),
 };
 
 const bestScoreKey = "neon-salvage-best";
@@ -46,6 +53,8 @@ const state = {
   paused: false,
   over: false,
   choosingUpgrade: false,
+  viewingAchievements: false,
+  pausedBeforeAchievements: false,
   score: 0,
   best: loadBestScore(),
   recentRuns: loadRunHistory(),
@@ -115,6 +124,8 @@ function resetGame() {
   state.paused = false;
   state.over = false;
   state.choosingUpgrade = false;
+  state.viewingAchievements = false;
+  state.pausedBeforeAchievements = false;
   state.score = 0;
   state.charge = 0;
   state.wave = 1;
@@ -148,6 +159,8 @@ function resetGame() {
   player.shieldLevel = 1;
 
   ui.overlay.hidden = true;
+  ui.achievementList.hidden = true;
+  ui.achievementList.innerHTML = "";
   ui.upgradeGrid.hidden = true;
   ui.upgradeGrid.innerHTML = "";
   ui.startButton.hidden = false;
@@ -226,12 +239,63 @@ function getAchievementSummary() {
   return `Achievements ${state.achievements.size}/${achievementTotal}`;
 }
 
+function openAchievementsOverlay() {
+  if (state.choosingUpgrade) return;
+  const wasRunning = state.running && !state.paused && !state.over && !state.choosingUpgrade;
+  state.viewingAchievements = true;
+  state.pausedBeforeAchievements = state.paused;
+  if (wasRunning) {
+    state.paused = true;
+  }
+  updateMusicLayer();
+  ui.overlay.hidden = false;
+  ui.upgradeGrid.hidden = true;
+  ui.achievementList.hidden = false;
+  ui.achievementList.innerHTML = "";
+  ui.overlayCopy.textContent = getAchievementSummary();
+  ui.startButton.hidden = false;
+  ui.startButton.textContent = wasRunning ? "Resume" : "Close";
+  ui.status.textContent = "Achievements";
+  ui.objective.textContent = "Review unlocks";
+
+  for (const achievement of achievementDefinitions) {
+    const item = document.createElement("div");
+    const unlocked = state.achievements.has(achievement.id);
+    item.className = `achievement-item${unlocked ? " is-unlocked" : ""}`;
+    item.innerHTML = `<span>${unlocked ? "Unlocked" : "Locked"}</span><strong>${achievement.name}</strong>`;
+    ui.achievementList.append(item);
+  }
+}
+
+function closeAchievementsOverlay() {
+  state.viewingAchievements = false;
+  ui.achievementList.hidden = true;
+  ui.achievementList.innerHTML = "";
+  if (state.running && !state.over) {
+    state.paused = state.pausedBeforeAchievements;
+    ui.overlay.hidden = !state.paused;
+    ui.status.textContent = state.paused ? "Paused" : "Harvesting";
+    ui.objective.textContent = state.paused ? "Resume run" : "Collect shards";
+    ui.overlayCopy.textContent = `Systems paused. ${getAchievementSummary()}. Press P to resume.`;
+    ui.startButton.textContent = "Resume";
+    if (!state.paused) {
+      state.lastTime = performance.now();
+    }
+  } else {
+    ui.overlay.hidden = false;
+    ui.overlayCopy.textContent = `Collect shards, dodge debris, and overclock your salvage drone. ${getAchievementSummary()}.`;
+    ui.startButton.textContent = "Launch";
+  }
+  state.pausedBeforeAchievements = false;
+  updateMusicLayer();
+}
+
 function updateMusicLayer() {
   updateAudioPressure({
     running: state.running,
     paused: state.paused,
     over: state.over,
-    choosingUpgrade: state.choosingUpgrade,
+    choosingUpgrade: state.choosingUpgrade || state.viewingAchievements,
     wave: state.wave,
     hazardCount: state.hazards.length,
   });
@@ -330,8 +394,10 @@ function addBurst(x, y, color, count = 10) {
 
 function openUpgradeChoice() {
   state.choosingUpgrade = true;
+  state.viewingAchievements = false;
   stopMusicLayer();
   ui.overlay.hidden = false;
+  ui.achievementList.hidden = true;
   ui.upgradeGrid.hidden = false;
   ui.upgradeGrid.innerHTML = "";
   ui.overlayCopy.textContent = "Choose one overclock module.";
@@ -358,6 +424,7 @@ function applyUpgrade(upgrade) {
   ui.status.textContent = "Module upgraded";
   ui.objective.textContent = "Collect shards";
   ui.overlay.hidden = true;
+  ui.achievementList.hidden = true;
   ui.upgradeGrid.hidden = true;
   ui.upgradeGrid.innerHTML = "";
   ui.startButton.hidden = false;
@@ -644,7 +711,7 @@ function formatTime(seconds) {
 }
 
 function togglePause() {
-  if (!state.running || state.over || state.choosingUpgrade) return;
+  if (!state.running || state.over || state.choosingUpgrade || state.viewingAchievements) return;
   state.paused = !state.paused;
   updateMusicLayer();
   ui.status.textContent = state.paused ? "Paused" : "Harvesting";
@@ -888,7 +955,9 @@ canvas.addEventListener("pointercancel", () => {
 
 ui.startButton.addEventListener("click", () => {
   ensureAudio();
-  if (state.paused) {
+  if (state.viewingAchievements) {
+    closeAchievementsOverlay();
+  } else if (state.paused) {
     togglePause();
   } else {
     resetGame();
@@ -898,6 +967,10 @@ ui.startButton.addEventListener("click", () => {
 ui.dashButton.addEventListener("pointerdown", (event) => {
   event.preventDefault();
   dash();
+});
+
+ui.achievementsButton.addEventListener("click", () => {
+  openAchievementsOverlay();
 });
 
 ui.audioButton.addEventListener("click", () => {

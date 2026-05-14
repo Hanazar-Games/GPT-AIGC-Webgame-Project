@@ -151,6 +151,44 @@ h1 {
   display: none;
 }
 
+.achievement-list {
+  width: min(720px, 100%);
+  max-height: 260px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  overflow: auto;
+}
+
+.achievement-list[hidden] {
+  display: none;
+}
+
+.achievement-item {
+  min-width: 0;
+  padding: 10px;
+  border: 1px solid rgba(170, 190, 210, 0.22);
+  border-radius: 8px;
+  background: rgba(8, 22, 30, 0.88);
+  text-align: left;
+}
+
+.achievement-item.is-unlocked {
+  border-color: rgba(114, 242, 160, 0.48);
+}
+
+.achievement-item span {
+  display: block;
+  color: var(--muted);
+  font-size: 0.72rem;
+  line-height: 1.2;
+}
+
+.achievement-item strong {
+  margin-top: 3px;
+  font-size: 0.94rem;
+}
+
 .upgrade-choice {
   min-width: 0;
   min-height: 118px;
@@ -244,6 +282,7 @@ button:focus-visible {
   gap: 6px;
 }
 
+.achievements-button,
 .audio-button,
 .dash-button {
   min-width: 68px;
@@ -251,6 +290,12 @@ button:focus-visible {
   padding: 4px 10px;
   color: var(--ink);
   font-size: 0.78rem;
+}
+
+.achievements-button {
+  min-width: 108px;
+  border-color: rgba(57, 216, 255, 0.38);
+  background: rgba(57, 216, 255, 0.1);
 }
 
 .audio-button {
@@ -308,6 +353,10 @@ kbd {
   }
 
   .upgrade-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .achievement-list {
     grid-template-columns: 1fr;
   }
 
