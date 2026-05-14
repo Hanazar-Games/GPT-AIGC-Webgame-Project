@@ -338,8 +338,9 @@ function spawnShard() {
 function spawnHazard() {
   const edge = Math.floor(random(0, 4));
   const elite = state.wave >= 4 && Math.random() < Math.min(0.12 + state.wave * 0.025, 0.32);
+  const type = elite ? pickEliteHazardType() : "drifter";
   const speed = random(80, 150) + state.wave * 14 + (elite ? 32 : 0);
-  const radius = random(14, 27) + state.wave * 0.7 + (elite ? 7 : 0);
+  const radius = random(14, 27) + state.wave * 0.7 + (elite ? 7 : 0) + (type === "splitter" ? 5 : 0);
   let x = 0;
   let y = 0;
   let vx = 0;
@@ -374,12 +375,39 @@ function spawnHazard() {
     vy,
     radius,
     elite,
-    type: elite ? "seeker" : "drifter",
+    type,
     rotation: random(0, Math.PI * 2),
     spin: random(-2.2, 2.2) * (elite ? 1.35 : 1),
-    damage: 12 + state.wave * 1.5 + (elite ? 8 : 0),
+    damage: 12 + state.wave * 1.5 + (elite ? 8 : 0) + (type === "splitter" ? 4 : 0),
     grazed: false,
   });
+}
+
+function pickEliteHazardType() {
+  if (state.wave >= 6 && Math.random() < 0.42) {
+    return "splitter";
+  }
+  return "seeker";
+}
+
+function spawnSplitterFragments(hazard) {
+  for (let i = 0; i < 3; i += 1) {
+    const angle = hazard.rotation + (Math.PI * 2 * i) / 3;
+    const speed = 120 + state.wave * 10;
+    state.hazards.push({
+      x: hazard.x + Math.cos(angle) * hazard.radius * 0.4,
+      y: hazard.y + Math.sin(angle) * hazard.radius * 0.4,
+      vx: Math.cos(angle) * speed + hazard.vx * 0.25,
+      vy: Math.sin(angle) * speed + hazard.vy * 0.25,
+      radius: Math.max(9, hazard.radius * 0.42),
+      elite: false,
+      type: "drifter",
+      rotation: random(0, Math.PI * 2),
+      spin: random(-2.8, 2.8),
+      damage: Math.max(7, hazard.damage * 0.36),
+      grazed: false,
+    });
+  }
 }
 
 function addBurst(x, y, color, count = 10) {
@@ -612,6 +640,9 @@ function triggerShieldPulse() {
     if (distance(player, hazard) <= player.pulseRadius + hazard.radius) {
       state.hazards.splice(i, 1);
       cleared += 1;
+      if (hazard.type === "splitter") {
+        spawnSplitterFragments(hazard);
+      }
       addBurst(hazard.x, hazard.y, "#39d8ff", hazard.elite ? 16 : 8);
     }
   }
@@ -812,8 +843,8 @@ function drawHazards() {
     ctx.save();
     ctx.translate(hazard.x, hazard.y);
     ctx.rotate(hazard.rotation);
-    ctx.fillStyle = hazard.elite ? "#3b2f16" : "#3a2630";
-    ctx.strokeStyle = hazard.elite ? "#ffd166" : "#ff5f7e";
+    ctx.fillStyle = hazard.type === "splitter" ? "#22302d" : hazard.elite ? "#3b2f16" : "#3a2630";
+    ctx.strokeStyle = hazard.type === "splitter" ? "#72f2a0" : hazard.elite ? "#ffd166" : "#ff5f7e";
     ctx.lineWidth = hazard.elite ? 4 : 3;
     ctx.beginPath();
     for (let i = 0; i < 9; i += 1) {
@@ -829,7 +860,7 @@ function drawHazards() {
     ctx.stroke();
 
     if (hazard.elite) {
-      ctx.strokeStyle = "rgba(255, 209, 102, 0.36)";
+      ctx.strokeStyle = hazard.type === "splitter" ? "rgba(114, 242, 160, 0.34)" : "rgba(255, 209, 102, 0.36)";
       ctx.lineWidth = 2;
       ctx.beginPath();
       ctx.arc(0, 0, hazard.radius + 8, 0, Math.PI * 2);
