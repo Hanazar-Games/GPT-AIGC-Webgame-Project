@@ -24,6 +24,9 @@ jobs:
       - name: Run smoke checks
         run: python3 tests/smoke.py
 
+      - name: Check static HTTP assets
+        run: python3 tests/http_check.py
+
   deploy:
     needs: verify
     runs-on: ubuntu-latest

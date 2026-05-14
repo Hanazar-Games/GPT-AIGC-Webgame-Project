@@ -56,6 +56,7 @@ Audio mute preference and recent run history are stored locally in the browser.
 
 ```sh
 python3 tests/smoke.py
+python3 tests/http_check.py
 ```
 
 No package install is required for the current version.

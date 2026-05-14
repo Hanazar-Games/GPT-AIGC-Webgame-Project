@@ -86,6 +86,7 @@ def main():
         "src/achievements.js",
         "src/audio.js",
         "src/upgrades.js",
+        "tests/http_check.py",
         "README.md",
         "LICENSE",
     ]
