@@ -116,6 +116,7 @@ def main():
     assert_contains("src/game.js", "upgrade-choice--")
     assert_contains("src/upgrades.js", "tag")
     assert_contains("src/game.js", "function updateDashButton")
+    assert_contains("src/game.js", "function updateAchievementsButton")
     assert_contains("src/game.js", 'from "./audio.js"')
     assert_contains("src/audio.js", "function playEventSound")
     assert_contains("src/audio.js", "function startMusicLayer")

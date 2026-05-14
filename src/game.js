@@ -174,6 +174,7 @@ function resetGame() {
   ui.overlayCopy.textContent = "Collect shards, dodge debris, and overclock your salvage drone.";
   ui.startButton.textContent = "Launch";
   updateAudioButton();
+  updateAchievementsButton();
   updateDashButton();
   updateHud();
 }
@@ -261,6 +262,7 @@ function openAchievementsOverlay() {
   ui.startButton.textContent = wasRunning ? "Resume" : "Close";
   ui.status.textContent = "Achievements";
   ui.objective.textContent = "Review unlocks";
+  updateAchievementsButton();
   const achievementStats = getAchievementStats(state.recentRuns, {
     grazes: state.grazes,
     wave: state.wave,
@@ -298,6 +300,7 @@ function closeAchievementsOverlay() {
   }
   state.pausedBeforeAchievements = false;
   updateMusicLayer();
+  updateAchievementsButton();
 }
 
 function updateMusicLayer() {
@@ -315,6 +318,10 @@ function updateAudioButton() {
   const muted = isAudioMuted();
   ui.audioButton.textContent = muted ? "Muted" : "Audio";
   ui.audioButton.setAttribute("aria-pressed", `${!muted}`);
+}
+
+function updateAchievementsButton() {
+  ui.achievementsButton.disabled = state.choosingUpgrade || state.viewingAchievements;
 }
 
 function createStars(count) {
@@ -433,6 +440,7 @@ function addBurst(x, y, color, count = 10) {
 function openUpgradeChoice() {
   state.choosingUpgrade = true;
   state.viewingAchievements = false;
+  updateAchievementsButton();
   stopMusicLayer();
   ui.overlay.hidden = false;
   ui.achievementList.hidden = true;
@@ -466,6 +474,7 @@ function applyUpgrade(upgrade) {
   ui.upgradeGrid.hidden = true;
   ui.upgradeGrid.innerHTML = "";
   ui.startButton.hidden = false;
+  updateAchievementsButton();
   addBurst(player.x, player.y, "#39d8ff", 28);
   playEventSound("upgrade");
 }
@@ -679,6 +688,7 @@ function updateHud() {
   ui.hull.textContent = `${Math.ceil(player.hull)}%`;
   ui.wave.textContent = `${state.wave}`;
   updateDashButton();
+  updateAchievementsButton();
   if (state.running && !state.paused && !state.over) {
     ui.objective.textContent =
       state.charge >= 70 ? "Almost upgraded" : player.hull <= 35 ? "Protect hull" : "Collect shards";

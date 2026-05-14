@@ -300,6 +300,15 @@ button:focus-visible {
   font-size: 0.78rem;
 }
 
+.achievements-button:disabled,
+.audio-button:disabled,
+.dash-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.48;
+  transform: none;
+  filter: none;
+}
+
 .achievements-button {
   min-width: 108px;
   border-color: rgba(57, 216, 255, 0.38);
@@ -320,13 +329,6 @@ button:focus-visible {
 .dash-button {
   border-color: rgba(255, 209, 102, 0.55);
   background: rgba(255, 209, 102, 0.14);
-}
-
-.dash-button:disabled {
-  cursor: not-allowed;
-  opacity: 0.48;
-  transform: none;
-  filter: none;
 }
 
 kbd {
