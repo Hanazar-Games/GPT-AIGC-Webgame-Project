@@ -88,6 +88,7 @@ def main():
         "src/upgrades.js",
         "tests/http_check.py",
         "README.md",
+        "docs/CHANGELOG.md",
         "LICENSE",
     ]
 
@@ -161,6 +162,7 @@ def main():
     assert_contains("src/styles.css", "@media (max-width: 760px)")
     assert_contains("src/styles.css", ".upgrade-choice--green")
     assert_contains("README.md", "python3 tests/smoke.py")
+    assert_contains("README.md", "docs/CHANGELOG.md")
     assert_contains("docs/OPERATIONS.md", "browsers block audio before user interaction")
 
     print("Smoke checks passed.")

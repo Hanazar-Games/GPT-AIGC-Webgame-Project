@@ -19,6 +19,7 @@ Open `http://localhost:4173`.
 3. Push to GitHub.
 4. Confirm the `Deploy static game` workflow passes.
 5. Open the Pages URL from the workflow environment and do one manual play test.
+6. Update `docs/CHANGELOG.md` when player-visible systems change.
 
 ## Manual Play Test
 

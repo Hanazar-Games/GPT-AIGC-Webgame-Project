@@ -69,3 +69,4 @@ The repository includes a GitHub Pages workflow at `.github/workflows/pages.yml`
 ## Direction
 
 The live roadmap is in `docs/ROADMAP.md`.
+Release notes are tracked in `docs/CHANGELOG.md`.
