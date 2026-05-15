@@ -59,6 +59,7 @@ def assert_js_modules_parse():
         "src/game.js",
         "src/achievements.js",
         "src/audio.js",
+        "src/storage.js",
         "src/upgrades.js",
     ]
 
@@ -85,6 +86,7 @@ def main():
         "src/game.js",
         "src/achievements.js",
         "src/audio.js",
+        "src/storage.js",
         "src/upgrades.js",
         "tests/http_check.py",
         "README.md",
@@ -119,6 +121,7 @@ def main():
     assert_contains("src/game.js", "function updateDashButton")
     assert_contains("src/game.js", "function updateAchievementsButton")
     assert_contains("src/game.js", 'from "./audio.js"')
+    assert_contains("src/game.js", 'from "./storage.js"')
     assert_contains("src/audio.js", "function playEventSound")
     assert_contains("src/audio.js", "function startMusicLayer")
     assert_contains("src/game.js", "function updateMusicLayer")
@@ -141,8 +144,8 @@ def main():
     assert_contains("src/game.js", "shardsCollected")
     assert_contains("src/game.js", "grazes")
     assert_contains("src/game.js", "Final module")
-    assert_contains("src/game.js", "runHistoryKey")
-    assert_contains("src/game.js", "achievementKey")
+    assert_contains("src/storage.js", "runHistoryKey")
+    assert_contains("src/storage.js", "achievementKey")
     assert_contains("src/game.js", "shardMultiplier")
     assert_contains("src/game.js", "pulseRadius")
     assert_contains("src/upgrades.js", "toFixed")
@@ -152,10 +155,10 @@ def main():
     assert_contains("src/achievements.js", "splitter-control")
     assert_contains("src/game.js", "function spawnSplitterFragments")
     assert_contains("src/game.js", "elite")
-    assert_contains("src/game.js", "localStorage")
+    assert_contains("src/storage.js", "localStorage")
     assert_contains("src/audio.js", "AudioContext")
     assert_contains("src/audio.js", "setTargetAtTime")
-    assert_contains("src/game.js", "function saveBestScore")
+    assert_contains("src/storage.js", "function saveBestScore")
     assert_contains("src/game.js", "invulnerableTimer")
     assert_contains("src/game.js", "grazed")
     assert_contains("src/game.js", "requestAnimationFrame(frame)")

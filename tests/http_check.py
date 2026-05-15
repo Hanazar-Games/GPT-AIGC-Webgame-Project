@@ -13,6 +13,7 @@ URLS = [
     "/src/game.js",
     "/src/achievements.js",
     "/src/audio.js",
+    "/src/storage.js",
     "/src/upgrades.js",
 ]
 

@@ -46,6 +46,7 @@ Shield pulse can turn splitters into smaller debris and feed achievement progres
 - `src/game.js` - engine, entities, difficulty, input, and rendering
 - `src/achievements.js` - achievement definitions and unlock rules
 - `src/audio.js` - synthesized event audio and pressure music
+- `src/storage.js` - local persistence helpers
 - `src/upgrades.js` - upgrade branch data and stat mutation rules
 - `tests/smoke.py` - repository smoke checks for required files and browser-facing markup
 

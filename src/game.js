@@ -14,6 +14,14 @@ import {
   toggleAudioMuted,
   updateMusicLayer as updateAudioPressure,
 } from "./audio.js";
+import {
+  loadAchievementIds,
+  loadBestScore,
+  loadRunHistory,
+  saveAchievementIds,
+  saveBestScore,
+  saveRunHistory,
+} from "./storage.js";
 import { upgrades } from "./upgrades.js";
 
 const canvas = document.querySelector("#game");
@@ -38,9 +46,6 @@ const ui = {
   achievementsButton: document.querySelector("#achievements-button"),
 };
 
-const bestScoreKey = "neon-salvage-best";
-const runHistoryKey = "neon-salvage-runs";
-const achievementKey = "neon-salvage-achievements";
 const baseDashCooldown = 1.15;
 
 const keys = new Set();
@@ -179,63 +184,13 @@ function resetGame() {
   updateHud();
 }
 
-function loadBestScore() {
-  try {
-    return Number.parseInt(localStorage.getItem(bestScoreKey) || "0", 10) || 0;
-  } catch {
-    return 0;
-  }
-}
-
-function saveBestScore(value) {
-  try {
-    localStorage.setItem(bestScoreKey, `${Math.floor(value)}`);
-  } catch {
-    // Some private browsing modes reject localStorage writes.
-  }
-}
-
-function loadRunHistory() {
-  try {
-    const runs = JSON.parse(localStorage.getItem(runHistoryKey) || "[]");
-    return Array.isArray(runs) ? runs.filter((run) => Number.isFinite(run.score)).slice(0, 5) : [];
-  } catch {
-    return [];
-  }
-}
-
-function saveRunHistory(runs) {
-  try {
-    localStorage.setItem(runHistoryKey, JSON.stringify(runs.slice(0, 5)));
-  } catch {
-    // Best-effort only; gameplay should never depend on storage.
-  }
-}
-
-function loadAchievementIds() {
-  try {
-    const ids = JSON.parse(localStorage.getItem(achievementKey) || "[]");
-    return new Set(Array.isArray(ids) ? ids.filter((id) => typeof id === "string") : []);
-  } catch {
-    return new Set();
-  }
-}
-
-function saveAchievementIds() {
-  try {
-    localStorage.setItem(achievementKey, JSON.stringify([...state.achievements]));
-  } catch {
-    // Achievement storage is best-effort.
-  }
-}
-
 function unlockAchievements(run) {
   const unlocked = getNewAchievementUnlocks(state.achievements, run);
   for (const achievement of unlocked) {
     state.achievements.add(achievement.id);
   }
   if (unlocked.length > 0) {
-    saveAchievementIds();
+    saveAchievementIds(state.achievements);
   }
   return unlocked;
 }
