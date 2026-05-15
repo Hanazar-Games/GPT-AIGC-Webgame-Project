@@ -163,6 +163,7 @@ def main():
     assert_contains("src/styles.css", ".upgrade-choice--green")
     assert_contains("README.md", "python3 tests/smoke.py")
     assert_contains("README.md", "docs/CHANGELOG.md")
+    assert_contains("docs/CHANGELOG.md", "2026-05-15")
     assert_contains("docs/OPERATIONS.md", "browsers block audio before user interaction")
 
     print("Smoke checks passed.")

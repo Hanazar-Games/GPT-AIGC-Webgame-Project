@@ -1,6 +1,6 @@
 # Changelog
 
-## Current
+## 2026-05-15
 
 - Built the zero-install Canvas survival game loop.
 - Added branching upgrades: Collector, Thrusters, and Shield.
