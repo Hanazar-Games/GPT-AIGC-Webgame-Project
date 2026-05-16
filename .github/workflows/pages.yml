@@ -21,11 +21,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Run smoke checks
-        run: python3 tests/smoke.py
-
-      - name: Check static HTTP assets
-        run: python3 tests/http_check.py
+      - name: Run release checks
+        run: python3 tests/release_check.py
 
   deploy:
     needs: verify

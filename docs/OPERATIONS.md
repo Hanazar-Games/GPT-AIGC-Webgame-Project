@@ -5,8 +5,7 @@ Neon Salvage is a static site. The current production target is GitHub Pages.
 ## Local Runbook
 
 ```sh
-python3 tests/smoke.py
-python3 tests/http_check.py
+python3 tests/release_check.py
 python3 -m http.server 4173
 ```
 
@@ -14,7 +13,7 @@ Open `http://localhost:4173`.
 
 ## Release Runbook
 
-1. Keep changes scoped and run `python3 tests/smoke.py` plus `python3 tests/http_check.py`.
+1. Keep changes scoped and run `python3 tests/release_check.py`.
 2. Commit to `main`.
 3. Push to GitHub.
 4. Confirm the `Deploy static game` workflow passes.
@@ -35,7 +34,7 @@ Open `http://localhost:4173`.
 
 ## Incident Notes
 
-- If Pages deploy fails before upload, check the smoke test output first.
+- If Pages deploy fails before upload, check the release-check output first.
 - If HTTP checks fail, verify every module imported by `src/game.js` is present in `src/`.
 - On non-macOS runners, the optional `osascript` JavaScript parse is skipped.
 - If the page is blank, verify `index.html` still points to `src/styles.css` and `src/game.js`.

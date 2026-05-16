@@ -50,6 +50,7 @@ Shield pulse can turn splitters into smaller debris and feed achievement progres
 - `src/upgrades.js` - upgrade branch data and stat mutation rules
 - `src/utils.js` - shared math and run-summary helpers
 - `tests/smoke.py` - repository smoke checks for required files and browser-facing markup
+- `tests/release_check.py` - one-command release verification
 
 The game stores the best score in browser `localStorage`. It also rewards near misses and uses short invulnerability windows to keep collisions readable.
 Audio mute preference and recent run history are stored locally in the browser.
@@ -57,8 +58,7 @@ Audio mute preference and recent run history are stored locally in the browser.
 ## Verify
 
 ```sh
-python3 tests/smoke.py
-python3 tests/http_check.py
+python3 tests/release_check.py
 ```
 
 No package install is required for the current version.

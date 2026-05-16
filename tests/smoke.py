@@ -91,6 +91,7 @@ def main():
         "src/upgrades.js",
         "src/utils.js",
         "tests/http_check.py",
+        "tests/release_check.py",
         "README.md",
         "docs/CHANGELOG.md",
         "LICENSE",
@@ -170,7 +171,8 @@ def main():
     assert_contains("src/game.js", "requestAnimationFrame(frame)")
     assert_contains("src/styles.css", "@media (max-width: 760px)")
     assert_contains("src/styles.css", ".upgrade-choice--green")
-    assert_contains("README.md", "python3 tests/smoke.py")
+    assert_contains("README.md", "python3 tests/release_check.py")
+    assert_contains("docs/OPERATIONS.md", "python3 tests/release_check.py")
     assert_contains("README.md", "docs/CHANGELOG.md")
     assert_contains("docs/CHANGELOG.md", "2026-05-15")
     assert_contains("docs/OPERATIONS.md", "browsers block audio before user interaction")
