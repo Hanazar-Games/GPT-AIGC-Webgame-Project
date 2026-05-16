@@ -148,6 +148,8 @@ def main():
     assert_contains("src/game.js", "shardsCollected")
     assert_contains("src/game.js", "grazes")
     assert_contains("src/game.js", "Final module")
+    assert_contains("src/game.js", "upgradePath")
+    assert_contains("src/game.js", "Route:")
     assert_contains("src/storage.js", "runHistoryKey")
     assert_contains("src/storage.js", "achievementKey")
     assert_contains("src/game.js", "shardMultiplier")

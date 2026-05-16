@@ -10,7 +10,7 @@ This project is operated as a living solo webgame. Each cycle should leave the g
 
 ## Next Gameplay
 
-- Add late-branch upgrade variants and selection history.
+- Add late-branch upgrade variants.
 - Add richer music motifs for upgrade branches.
 - Add elite warning tells and richer splitter counterplay.
 - Add lifetime stat totals for achievement progress.

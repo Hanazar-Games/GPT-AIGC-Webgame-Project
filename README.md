@@ -29,7 +29,7 @@ When charge reaches 100%, pick one of three upgrade branches.
 Collector raises shard value; Shield adds a defensive pulse after hits.
 Upgrade cards use branch colors and tags for quick scanning.
 End-of-run results include survival time, shards collected, and near-miss grazes.
-They also show the final module state for the run.
+They also show the final module state and upgrade route for the run.
 The last five runs are tracked locally for trend feedback.
 Achievement unlocks are stored locally for long-term goals.
 Pause and end screens show achievement progress.

@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-05-16
+
+- Added per-run upgrade route tracking to pause and end screens.
+
 ## 2026-05-15
 
 - Built the zero-install Canvas survival game loop.

@@ -67,6 +67,7 @@ const state = {
   best: loadBestScore(),
   recentRuns: loadRunHistory(),
   achievements: loadAchievementIds(),
+  upgradePath: [],
   charge: 0,
   wave: 1,
   elapsed: 0,
@@ -124,6 +125,7 @@ function resetGame() {
   state.viewingAchievements = false;
   state.pausedBeforeAchievements = false;
   state.score = 0;
+  state.upgradePath = [];
   state.charge = 0;
   state.wave = 1;
   state.elapsed = 0;
@@ -188,6 +190,10 @@ function getAchievementSummary() {
   return `Achievements ${state.achievements.size}/${achievementTotal}`;
 }
 
+function getUpgradePathLabel() {
+  return state.upgradePath.length > 0 ? `Route: ${state.upgradePath.join(" -> ")}` : "Route: stock drone";
+}
+
 function openAchievementsOverlay() {
   if (state.choosingUpgrade) return;
   const wasRunning = state.running && !state.paused && !state.over && !state.choosingUpgrade;
@@ -232,7 +238,7 @@ function closeAchievementsOverlay() {
     ui.overlay.hidden = !state.paused;
     ui.status.textContent = state.paused ? "Paused" : "Harvesting";
     ui.objective.textContent = state.paused ? "Resume run" : "Collect shards";
-    ui.overlayCopy.textContent = `Systems paused. ${getAchievementSummary()}. Press P to resume.`;
+    ui.overlayCopy.textContent = `Systems paused. ${getUpgradePathLabel()}. ${getAchievementSummary()}. Press P to resume.`;
     ui.startButton.textContent = "Resume";
     if (!state.paused) {
       state.lastTime = performance.now();
@@ -390,7 +396,7 @@ function openUpgradeChoice() {
   ui.achievementList.hidden = true;
   ui.upgradeGrid.hidden = false;
   ui.upgradeGrid.innerHTML = "";
-  ui.overlayCopy.textContent = "Choose one overclock module.";
+  ui.overlayCopy.textContent = `Choose one overclock module. ${getUpgradePathLabel()}.`;
   ui.startButton.hidden = true;
   ui.status.textContent = "Upgrade ready";
   ui.objective.textContent = "Pick module";
@@ -408,6 +414,7 @@ function openUpgradeChoice() {
 
 function applyUpgrade(upgrade) {
   const label = upgrade.apply(player);
+  state.upgradePath.push(upgrade.name);
   state.choosingUpgrade = false;
   state.lastTime = performance.now();
   ui.module.textContent = label;
@@ -660,6 +667,7 @@ function endGame() {
     grazes: state.grazes,
     splittersControlled: state.splittersControlled,
     module: ui.module.textContent,
+    path: [...state.upgradePath],
     medal,
   };
 
@@ -679,7 +687,7 @@ function endGame() {
   ui.overlay.hidden = false;
   ui.overlayCopy.textContent = `Final score ${finalScore.toLocaleString("en-US")}. ${
     isRecord ? "New best saved." : `Best ${Math.floor(state.best).toLocaleString("en-US")}.`
-  } ${medal}. ${trend} Final module: ${ui.module.textContent}. Survived ${formatTime(state.elapsed)}, collected ${state.shardsCollected} shards, grazed ${state.grazes} times.${formatAchievementUnlocks(unlockedAchievements)} ${getAchievementSummary()}. Press R to relaunch.`;
+  } ${medal}. ${trend} Final module: ${ui.module.textContent}. ${getUpgradePathLabel()}. Survived ${formatTime(state.elapsed)}, collected ${state.shardsCollected} shards, grazed ${state.grazes} times.${formatAchievementUnlocks(unlockedAchievements)} ${getAchievementSummary()}. Press R to relaunch.`;
   ui.startButton.textContent = "Relaunch";
   playEventSound("gameover");
   updateHud();
@@ -692,7 +700,7 @@ function togglePause() {
   ui.status.textContent = state.paused ? "Paused" : "Harvesting";
   ui.objective.textContent = state.paused ? "Resume run" : "Collect shards";
   ui.overlay.hidden = !state.paused;
-  ui.overlayCopy.textContent = `Systems paused. ${getAchievementSummary()}. Press P to resume.`;
+  ui.overlayCopy.textContent = `Systems paused. ${getUpgradePathLabel()}. ${getAchievementSummary()}. Press P to resume.`;
   ui.startButton.textContent = "Resume";
   if (!state.paused) {
     state.lastTime = performance.now();
