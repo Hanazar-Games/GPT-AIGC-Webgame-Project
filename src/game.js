@@ -228,6 +228,8 @@ function openAchievementsOverlay() {
     item.innerHTML = `<span>${unlocked ? "Unlocked" : "Locked"} / ${getAchievementProgress(achievement, achievementStats)}</span><strong>${achievement.name}</strong><small>${achievement.hint}</small>`;
     ui.achievementList.append(item);
   }
+
+  appendRunHistory();
 }
 
 function closeAchievementsOverlay() {
@@ -252,6 +254,44 @@ function closeAchievementsOverlay() {
   state.pausedBeforeAchievements = false;
   updateMusicLayer();
   updateAchievementsButton();
+}
+
+function appendRunHistory() {
+  if (state.recentRuns.length === 0) {
+    ui.achievementList.append(createRunHistoryItem("Recent Runs", "No saved runs yet.", "Launch a run to seed history."));
+    return;
+  }
+
+  state.recentRuns.forEach((run, index) => {
+    const score = Number.isFinite(run.score) ? Math.floor(run.score).toLocaleString("en-US") : "0";
+    const seconds = Number.isFinite(run.seconds) ? run.seconds : 0;
+    const wave = Number.isFinite(run.wave) ? run.wave : 1;
+    const route = Array.isArray(run.path) && run.path.length > 0 ? run.path.join(" -> ") : "stock drone";
+    appendRunHistoryItem(index + 1, score, wave, seconds, route, run.medal || "Recorded run");
+  });
+}
+
+function appendRunHistoryItem(index, score, wave, seconds, route, medal) {
+  const item = createRunHistoryItem(
+    `Run ${index} / ${medal}`,
+    `${score} pts`,
+    `Wave ${wave}. ${formatTime(seconds)}. Route: ${route}.`,
+  );
+  ui.achievementList.append(item);
+}
+
+function createRunHistoryItem(meta, title, detail) {
+  const item = document.createElement("div");
+  const label = document.createElement("span");
+  const strong = document.createElement("strong");
+  const small = document.createElement("small");
+
+  item.className = "achievement-item run-history-item";
+  label.textContent = meta;
+  strong.textContent = title;
+  small.textContent = detail;
+  item.append(label, strong, small);
+  return item;
 }
 
 function updateMusicLayer() {

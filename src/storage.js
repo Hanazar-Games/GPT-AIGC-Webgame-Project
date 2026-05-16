@@ -24,7 +24,10 @@ export function loadRunHistory() {
     if (!Array.isArray(runs)) {
       return [];
     }
-    return runs.filter((run) => Number.isFinite(run.score)).slice(0, 5);
+    return runs
+      .map(normalizeRun)
+      .filter((run) => Number.isFinite(run.score))
+      .slice(0, 5);
   } catch {
     return [];
   }
@@ -56,4 +59,21 @@ export function saveAchievementIds(ids) {
   } catch {
     // Achievement storage is best-effort.
   }
+}
+
+function normalizeRun(run) {
+  if (!run || typeof run !== "object") {
+    return {};
+  }
+  return {
+    score: Number.isFinite(run.score) ? run.score : Number.NaN,
+    wave: Number.isFinite(run.wave) ? run.wave : 1,
+    seconds: Number.isFinite(run.seconds) ? run.seconds : 0,
+    shards: Number.isFinite(run.shards) ? run.shards : 0,
+    grazes: Number.isFinite(run.grazes) ? run.grazes : 0,
+    splittersControlled: Number.isFinite(run.splittersControlled) ? run.splittersControlled : 0,
+    module: typeof run.module === "string" ? run.module : "",
+    path: Array.isArray(run.path) ? run.path.filter((branch) => typeof branch === "string").slice(0, 8) : [],
+    medal: typeof run.medal === "string" ? run.medal : "",
+  };
 }

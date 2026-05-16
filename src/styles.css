@@ -177,6 +177,10 @@ h1 {
   border-color: rgba(114, 242, 160, 0.48);
 }
 
+.run-history-item {
+  border-color: rgba(255, 209, 102, 0.34);
+}
+
 .achievement-item span {
   display: block;
   color: var(--muted);
