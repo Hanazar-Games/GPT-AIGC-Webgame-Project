@@ -36,6 +36,7 @@ Pause and end screens show achievement progress.
 Use the Achievements control to review unlocked and locked achievements.
 Achievement cards include unlock hints.
 Some cards show progress based on recent runs and the current run.
+Hybrid Build rewards runs that touch all three upgrade branches.
 Wave 4 and beyond can spawn elite seeker debris; wave 6 adds splitter debris.
 Shield pulse can turn splitters into smaller debris and feed achievement progress.
 

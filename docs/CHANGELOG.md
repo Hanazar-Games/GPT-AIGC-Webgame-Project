@@ -3,6 +3,7 @@
 ## 2026-05-16
 
 - Added per-run upgrade route tracking to pause and end screens.
+- Added a Hybrid Build achievement for runs that use all three upgrade branches.
 - Added a single release-check command for local and GitHub Pages verification.
 
 ## 2026-05-15

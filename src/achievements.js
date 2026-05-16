@@ -56,6 +56,13 @@ export const achievementDefinitions = [
     earned: (run) => run.module.startsWith("Shield"),
   },
   {
+    id: "hybrid-build",
+    name: "Hybrid Build",
+    hint: "Pick Collector, Thrusters, and Shield in one run.",
+    progress: (stats) => hybridProgress(stats.paths),
+    earned: (run) => hasHybridPath(run.path),
+  },
+  {
     id: "splitter-control",
     name: "Splitter Control",
     hint: "Break up at least 2 splitter debris with Shield pulse in one run.",
@@ -89,6 +96,7 @@ export function getAchievementStats(runs, current = {}) {
       bestSplittersControlled: Math.max(stats.bestSplittersControlled, run.splittersControlled || 0),
       bestMedalRank: Math.max(stats.bestMedalRank, medalRank(run.medal)),
       modules: [...stats.modules, run.module || ""],
+      paths: [...stats.paths, Array.isArray(run.path) ? run.path : []],
     }),
     {
       bestGrazes: current.grazes || 0,
@@ -96,6 +104,7 @@ export function getAchievementStats(runs, current = {}) {
       bestSplittersControlled: current.splittersControlled || 0,
       bestMedalRank: 0,
       modules: [current.module || ""],
+      paths: [Array.isArray(current.path) ? current.path : []],
     },
   );
   return best;
@@ -120,4 +129,19 @@ function countProgress(value, target, label) {
 
 function branchProgress(modules, branch) {
   return modules.some((module) => module.startsWith(branch) && module !== "Collector I") ? "Done" : "Not yet";
+}
+
+function hasHybridPath(path) {
+  if (!Array.isArray(path)) return false;
+  const picks = new Set(path);
+  return ["Collector", "Thrusters", "Shield"].every((branch) => picks.has(branch));
+}
+
+function hybridProgress(paths) {
+  const bestCount = paths.reduce((best, path) => {
+    if (!Array.isArray(path)) return best;
+    const picks = new Set(path.filter((branch) => ["Collector", "Thrusters", "Shield"].includes(branch)));
+    return Math.max(best, picks.size);
+  }, 0);
+  return `${bestCount}/3 branches`;
 }

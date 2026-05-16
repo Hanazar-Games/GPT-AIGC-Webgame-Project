@@ -146,6 +146,8 @@ def main():
     assert_contains("src/achievements.js", "function getAchievementProgress")
     assert_contains("src/achievements.js", "function getAchievementStats")
     assert_contains("src/achievements.js", "function getNewAchievementUnlocks")
+    assert_contains("src/achievements.js", "hybrid-build")
+    assert_contains("src/achievements.js", "function hasHybridPath")
     assert_contains("src/game.js", "shardsCollected")
     assert_contains("src/game.js", "grazes")
     assert_contains("src/game.js", "Final module")

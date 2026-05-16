@@ -217,6 +217,7 @@ function openAchievementsOverlay() {
     grazes: state.grazes,
     wave: state.wave,
     module: ui.module.textContent,
+    path: state.upgradePath,
     splittersControlled: state.splittersControlled,
   });
 
