@@ -15,6 +15,7 @@ URLS = [
     "/src/audio.js",
     "/src/storage.js",
     "/src/upgrades.js",
+    "/src/utils.js",
 ]
 
 

@@ -61,6 +61,7 @@ def assert_js_modules_parse():
         "src/audio.js",
         "src/storage.js",
         "src/upgrades.js",
+        "src/utils.js",
     ]
 
     for module in modules:
@@ -88,6 +89,7 @@ def main():
         "src/audio.js",
         "src/storage.js",
         "src/upgrades.js",
+        "src/utils.js",
         "tests/http_check.py",
         "README.md",
         "docs/CHANGELOG.md",
@@ -122,14 +124,16 @@ def main():
     assert_contains("src/game.js", "function updateAchievementsButton")
     assert_contains("src/game.js", 'from "./audio.js"')
     assert_contains("src/game.js", 'from "./storage.js"')
+    assert_contains("src/game.js", 'from "./utils.js"')
     assert_contains("src/audio.js", "function playEventSound")
     assert_contains("src/audio.js", "function startMusicLayer")
     assert_contains("src/game.js", "function updateMusicLayer")
     assert_contains("src/game.js", "function updateAudioButton")
     assert_contains("src/game.js", "function triggerShieldPulse")
-    assert_contains("src/game.js", "function formatTime")
-    assert_contains("src/game.js", "function getRunMedal")
-    assert_contains("src/game.js", "function getTrendLabel")
+    assert_contains("src/utils.js", "function formatTime")
+    assert_contains("src/utils.js", "function getRunMedal")
+    assert_contains("src/utils.js", "function getTrendLabel")
+    assert_contains("src/utils.js", "function clamp")
     assert_contains("src/game.js", "function unlockAchievements")
     assert_contains("src/game.js", "function getAchievementSummary")
     assert_contains("src/game.js", "function openAchievementsOverlay")

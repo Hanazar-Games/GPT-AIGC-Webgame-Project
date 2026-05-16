@@ -9,7 +9,7 @@
 - Added an Achievements overlay with locked/unlocked states.
 - Added elite seeker debris and wave 6 splitter debris.
 - Added synthesized event audio and a pressure-reactive music layer.
-- Split achievements, audio, and upgrades into separate modules.
+- Split achievements, audio, storage, upgrades, and utility helpers into separate modules.
 - Added smoke, module syntax, HTTP asset checks, and GitHub Pages deployment.
 
 ## Operations

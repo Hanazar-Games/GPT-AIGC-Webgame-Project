@@ -48,6 +48,7 @@ Shield pulse can turn splitters into smaller debris and feed achievement progres
 - `src/audio.js` - synthesized event audio and pressure music
 - `src/storage.js` - local persistence helpers
 - `src/upgrades.js` - upgrade branch data and stat mutation rules
+- `src/utils.js` - shared math and run-summary helpers
 - `tests/smoke.py` - repository smoke checks for required files and browser-facing markup
 
 The game stores the best score in browser `localStorage`. It also rewards near misses and uses short invulnerability windows to keep collisions readable.
