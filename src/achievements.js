@@ -128,7 +128,8 @@ function countProgress(value, target, label) {
 }
 
 function branchProgress(modules, branch) {
-  return modules.some((module) => module.startsWith(branch) && module !== "Collector I") ? "Done" : "Not yet";
+  const startModule = `${branch} I`;
+  return modules.some((module) => module.startsWith(branch) && module !== startModule) ? "Done" : "Not yet";
 }
 
 function hasHybridPath(path) {

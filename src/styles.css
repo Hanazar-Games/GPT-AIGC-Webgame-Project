@@ -378,4 +378,180 @@ kbd {
     min-height: 420px;
     aspect-ratio: 9 / 12;
   }
+
+  .intro-orb {
+    width: 72px;
+    height: 72px;
+  }
+
+  .intro-brand {
+    font-size: 0.7rem;
+    letter-spacing: 0.3em;
+  }
+}
+
+/* Intro Screen */
+.intro-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 18px;
+  background:
+    radial-gradient(circle at 50% 40%, rgba(57, 216, 255, 0.08), transparent 55%),
+    radial-gradient(circle at 50% 60%, rgba(114, 242, 160, 0.05), transparent 50%),
+    #05070d;
+  transition: opacity 650ms ease, visibility 650ms ease;
+}
+
+.intro-screen.done {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.intro-orb {
+  width: 90px;
+  height: 90px;
+  position: relative;
+  margin-bottom: 6px;
+}
+
+.intro-orb::before,
+.intro-orb::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 2px solid rgba(57, 216, 255, 0.35);
+}
+
+.intro-orb::before {
+  animation: introOrbSpin 2.2s linear infinite, introOrbPulse 2s ease-in-out infinite;
+}
+
+.intro-orb::after {
+  inset: -12px;
+  border-color: rgba(114, 242, 160, 0.15);
+  border-style: dashed;
+  animation: introOrbSpin 3s linear infinite reverse;
+}
+
+.intro-orb-core {
+  position: absolute;
+  inset: 22px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 40% 40%, rgba(57, 216, 255, 0.35), rgba(114, 242, 160, 0.1) 60%, transparent 75%);
+  animation: introCorePulse 1.6s ease-in-out infinite;
+}
+
+.intro-brand {
+  margin: 0;
+  font-size: 0.78rem;
+  letter-spacing: 0.42em;
+  text-transform: uppercase;
+  color: var(--muted);
+  opacity: 0;
+  animation: introFadeUp 0.7s ease 0.12s forwards;
+}
+
+.intro-title {
+  margin: 0;
+  font-size: clamp(2.8rem, 9vw, 6.6rem);
+  line-height: 0.95;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--ink);
+  text-shadow: 0 0 50px rgba(57, 216, 255, 0.2);
+  opacity: 0;
+  animation: introFadeUp 0.9s ease 0.42s forwards, introTitleGlow 2.2s ease-in-out 1.4s infinite alternate;
+}
+
+.intro-progress {
+  width: min(360px, 78vw);
+  margin-top: 14px;
+}
+
+.intro-progress-track {
+  width: 100%;
+  height: 3px;
+  background: rgba(170, 190, 210, 0.12);
+  border-radius: 2px;
+  overflow: hidden;
+  position: relative;
+}
+
+.intro-progress-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--cyan), var(--green));
+  border-radius: 2px;
+  box-shadow: 0 0 10px rgba(57, 216, 255, 0.4);
+  animation: introProgressFill 2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.intro-progress-glow {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 48px;
+  height: 16px;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(ellipse, rgba(57, 216, 255, 0.6), transparent 70%);
+  opacity: 0;
+  animation: introProgressGlow 2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.intro-status {
+  margin: 0;
+  font-size: 0.72rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted);
+  opacity: 0;
+  animation: introFadeIn 0.5s ease 0.8s forwards;
+}
+
+@keyframes introFadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes introFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes introOrbSpin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes introOrbPulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.14); opacity: 0.55; }
+}
+
+@keyframes introCorePulse {
+  0%, 100% { opacity: 0.5; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.25); }
+}
+
+@keyframes introTitleGlow {
+  from { text-shadow: 0 0 50px rgba(57, 216, 255, 0.2); }
+  to { text-shadow: 0 0 70px rgba(57, 216, 255, 0.45), 0 0 120px rgba(114, 242, 160, 0.15); }
+}
+
+@keyframes introProgressFill {
+  0% { width: 0%; }
+  100% { width: 100%; }
+}
+
+@keyframes introProgressGlow {
+  0% { left: 0%; opacity: 0; }
+  8% { opacity: 1; }
+  92% { opacity: 1; }
+  100% { left: 100%; opacity: 0; }
 }

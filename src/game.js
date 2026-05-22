@@ -43,6 +43,7 @@ const ui = {
   upgradeGrid: document.querySelector("#upgrade-grid"),
   startButton: document.querySelector("#start-button"),
   dashButton: document.querySelector("#dash-button"),
+  introScreen: document.querySelector("#intro-screen"),
   audioButton: document.querySelector("#audio-button"),
   achievementsButton: document.querySelector("#achievements-button"),
 };
@@ -942,6 +943,8 @@ window.addEventListener("keydown", (event) => {
   const key = event.key.toLowerCase();
   keys.add(key);
 
+  if (event.repeat) return;
+
   if (key === " ") {
     event.preventDefault();
     dash();
@@ -950,12 +953,19 @@ window.addEventListener("keydown", (event) => {
   } else if (key === "p") {
     togglePause();
   } else if (key === "r") {
-    resetGame();
+    if (!state.viewingAchievements) {
+      resetGame();
+    }
   }
 });
 
 window.addEventListener("keyup", (event) => {
   keys.delete(event.key.toLowerCase());
+});
+
+window.addEventListener("blur", () => {
+  keys.clear();
+  pointer.active = false;
 });
 
 canvas.addEventListener("pointerdown", (event) => {
@@ -969,12 +979,22 @@ canvas.addEventListener("pointermove", (event) => {
   Object.assign(pointer, canvasPoint(event));
 });
 
-canvas.addEventListener("pointerup", () => {
+canvas.addEventListener("pointerup", (event) => {
   pointer.active = false;
+  try {
+    canvas.releasePointerCapture(event.pointerId);
+  } catch {
+    // Ignore if capture was already lost.
+  }
 });
 
-canvas.addEventListener("pointercancel", () => {
+canvas.addEventListener("pointercancel", (event) => {
   pointer.active = false;
+  try {
+    canvas.releasePointerCapture(event.pointerId);
+  } catch {
+    // Ignore if capture was already lost.
+  }
 });
 
 ui.startButton.addEventListener("click", () => {
@@ -1021,3 +1041,7 @@ updateDashButton();
 updateAudioButton();
 draw();
 requestAnimationFrame(frame);
+
+setTimeout(() => {
+  ui.introScreen.classList.add("done");
+}, 2000);
